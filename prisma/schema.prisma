@@ -1,0 +1,288 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String        @id @default(cuid())
+  name            String?
+  email           String        @unique
+  emailVerified   DateTime?
+  image           String?
+  password        String?
+  number          String?
+  role            Role          @default(USER)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  organisation  Organisation?  @relation("UserOrganisation")
+}
+
+
+model Organisation {
+  id        String    @id @default(cuid())
+  companyName      String
+  email     String    @unique
+  logoUrl   String?
+  website   String?
+  numberCompany  String?
+  address   String?
+  city      String?
+  country   String?
+  events          Event[]
+  user      User?     @relation("UserOrganisation", fields: [userId], references: [id], onDelete: SetNull)
+  userId    String?   @unique
+}
+
+model Event {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  Organizers  Json?
+  startDate   DateTime
+  endDate     DateTime
+  location    String?
+  logo        String?
+  coverImage  String?
+  status      EventStatus @default(DRAFT)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  organisationId      String
+  organisation        Organisation        @relation(fields: [organisationId], references: [id])
+  speakers    Speaker[]
+  sideEventItem    SideEventItem[]
+  locations   Location[]
+  partners    Partner[]
+  qrCodes     QRCode[]
+  invites     Invite[]
+  clients     Client[]
+  invoices    Invoice[]
+  country   CountryEvent[] 
+}
+
+model Client {
+  id        String       @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  address   String?
+  city      String?
+  country   String?
+  notes     String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  events    Event[]
+  invoices  Invoice[]
+}
+
+model Invoice {
+  id        String        @id @default(cuid())
+  number    String
+  amount    Float
+  status    InvoiceStatus @default(DRAFT)
+  dueDate   DateTime
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  clientId  String
+  client    Client        @relation(fields: [clientId], references: [id])
+  eventId   String
+  event     Event         @relation(fields: [eventId], references: [id])
+}
+
+model Speaker {
+  id           String    @id @default(cuid())
+  name         String
+  organization String?
+  bio          String?
+  title        String?
+  avatar       String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  events       Event[]
+  sideEventItem     SideEventItem[]
+}
+
+model SideEventItem {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  time        String?
+  type        SessionType @default(MASTER_CLASS)
+  location    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  eventId     String
+  event       Event       @relation(fields: [eventId], references: [id])
+  speakers    Speaker[]
+}
+
+model Location {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  city        String
+  country     String
+  postalCode  String?
+  description String?
+  capacity    Int?
+  latitude    Float?
+  longitude   Float?
+  visibility  Boolean     @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  events      Event[]
+}
+
+model Partner {
+  id          String      @id @default(cuid())
+  name        String
+  type        PartnerType @default(SPONSOR)
+  website     String?
+  description String?
+  logo        String?
+  tier        String?
+  visibility  Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  events      Event[]
+}
+
+model QRCode {
+  id               String     @id @default(cuid())
+  name             String
+  type             QRCodeType @default(URL)
+  content          String
+  description      String?
+  foregroundColor  String?     @default("#000000")
+  backgroundColor  String?     @default("#FFFFFF")
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  eventId          String?
+  event            Event?     @relation(fields: [eventId], references: [id])
+}
+
+model Invite {
+  id          String       @id @default(cuid())
+  email       String
+  name        String?
+  status      InviteStatus @default(PENDING)
+  token       String       @unique
+  expiresAt   DateTime?
+  message     String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  eventId     String
+  event       Event        @relation(fields: [eventId], references: [id])
+  country     CountryInvite[]     
+}
+
+model Hotel {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  city        String
+  country     String
+  postalCode  String?
+  description String?
+  capacity    Int?
+  latitude    Float?
+  longitude   Float?
+  visibility  Boolean     @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model Country {
+  id        String          @id @default(cuid())
+  name      String          @unique
+  code      String          @unique
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  events    CountryEvent[]  // Added relation field for CountryEvent
+  invites   CountryInvite[] // Added relation field for CountryInvite
+}
+
+model CountryEvent {
+  eventId    String
+  countryId    String
+  createdAt DateTime @default(now())
+
+  // Relations
+  invites      Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  country      Country     @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, countryId])
+}
+
+model CountryInvite {
+  inviteId    String
+  countryId    String
+  createdAt DateTime @default(now())
+
+  // Relations
+  invites      Invite     @relation(fields: [inviteId], references: [id], onDelete: Cascade)
+  country      Country     @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  @@id([inviteId, countryId])
+}
+
+enum Role {
+  USER
+  ORGANISER
+  ADMIN
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  COMPLETED
+}
+
+enum SessionType {
+  MASTER_CLASS
+  WORKSHOP
+  KEYNOTE
+  PANEL
+  NETWORKING
+}
+
+enum PartnerType {
+  SPONSOR
+  MEDIA_PARTNER
+  COMMUNITY_PARTNER
+  TECHNOLOGY_PARTNER
+}
+
+enum QRCodeType {
+  URL
+  TEXT
+  EMAIL
+  PHONE
+  SMS
+  WIFI
+  VCARD
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
