@@ -64,12 +64,12 @@ export function SlideOver({ open, onClose, title, children, width = "50%", side 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
       <div
-        className="absolute inset-0 bg-black/30 transition-opacity duration-300"
+        className="absolute inset-0 bg-black/30 transition-opacity h-screen duration-300"
         style={{ opacity: isClosing ? 0 : 1 }}
         onClick={handleClose}
       />
 
-      <div className={`fixed inset-y-0 ${side === "right" ? "right-0" : "left-0"} flex max-w-full`}>
+      <div className={`fixed inset-y-0 ${side === "right" ? "[right:0!important]" : "left-0"} flex max-w-full`}>
         <div
           className="w-screen transform transition-transform duration-300 ease-in-out"
           style={{
@@ -92,5 +92,6 @@ export function SlideOver({ open, onClose, title, children, width = "50%", side 
         </div>
       </div>
     </div>
+
   )
 }

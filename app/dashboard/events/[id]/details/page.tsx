@@ -208,9 +208,6 @@ export default function EventDetailPage() {
   const handleFormSubmit = (data: any) => {
     console.log("Form submitted:", data)
 
-    // In a real app, you would save the data to your backend
-    // For now, we'll just update the local state
-
     if (slideOverContent === "addSession") {
       const newSession = {
         id: `s${event.sessions.length + 1}`,

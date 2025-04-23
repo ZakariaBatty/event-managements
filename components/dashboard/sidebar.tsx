@@ -25,7 +25,7 @@ import { QuickEventForm } from "@/components/dashboard/quick-event-form"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 export function DashboardSidebar({ className }: SidebarProps) {
   const pathname = usePathname()
@@ -44,16 +44,6 @@ export function DashboardSidebar({ className }: SidebarProps) {
     }
   }
 
-  const handleQuickEventSubmit = (eventData: any) => {
-    // In a real app, you would call an API to save the event
-    console.log("Quick event data to save:", eventData)
-    setQuickEventOpen(false)
-
-    // Navigate to events page after creating
-    setTimeout(() => {
-      router.push("/dashboard/events")
-    }, 500)
-  }
 
   return (
     <>
@@ -84,22 +74,13 @@ export function DashboardSidebar({ className }: SidebarProps) {
               </span>
             </Button>
 
-            {/* Add Event Quick Button */}
-            <Button
-              size="sm"
-              className="bg-primary hover:bg-primary-light text-white"
-              onClick={() => setQuickEventOpen(true)}
-            >
-              <PlusCircle className="mr-1 h-4 w-4" />
-              Add Event
-            </Button>
           </div>
           <div className="px-3 py-2">
             <h2 className="mb-2 px-4 text-xs font-semibold tracking-tight text-gray-500 uppercase">Dashboard</h2>
             <div className="space-y-1">
               <Button
                 variant="ghost"
-                className={cn("w-full justify-start", pathname === "/dashboard" && "bg-gray-100/80")}
+                className={cn("w-full !justify-start", pathname === "/dashboard" && "bg-gray-100/80")}
                 onClick={() => navigateTo("/dashboard")}
               >
                 <Home className="mr-2 h-5 w-5 text-icon-blue" />
@@ -109,7 +90,7 @@ export function DashboardSidebar({ className }: SidebarProps) {
               <div className="space-y-1">
                 <Button
                   variant="ghost"
-                  className={cn("w-full justify-start", pathname?.includes("/dashboard/events") && "bg-gray-100/80")}
+                  className={cn("w-full !justify-start", pathname?.includes("/dashboard/events") && "bg-gray-100/80")}
                   onClick={() => navigateTo("/dashboard/events")}
                 >
                   <Calendar className="mr-2 h-5 w-5 text-icon-purple" />
@@ -121,7 +102,7 @@ export function DashboardSidebar({ className }: SidebarProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-full justify-start text-sm"
+                      className="w-full !justify-start text-sm"
                       onClick={() => navigateTo("/dashboard/events/new")}
                     >
                       <PlusCircle className="mr-2 h-4 w-4 text-icon-purple" />
@@ -134,7 +115,7 @@ export function DashboardSidebar({ className }: SidebarProps) {
               <div className="space-y-1">
                 <Button
                   variant="ghost"
-                  className={cn("w-full justify-start", pathname?.includes("/dashboard/clients") && "bg-gray-100/80")}
+                  className={cn("w-full !justify-start", pathname?.includes("/dashboard/clients") && "bg-gray-100/80")}
                   onClick={() => navigateTo("/dashboard/clients")}
                 >
                   <Building className="mr-2 h-5 w-5 text-icon-orange" />
@@ -145,7 +126,7 @@ export function DashboardSidebar({ className }: SidebarProps) {
               <div className="space-y-1">
                 <Button
                   variant="ghost"
-                  className={cn("w-full justify-start", pathname?.includes("/dashboard/users") && "bg-gray-100/80")}
+                  className={cn("w-full !justify-start", pathname?.includes("/dashboard/users") && "bg-gray-100/80")}
                   onClick={() => navigateTo("/dashboard/users")}
                 >
                   <Users className="mr-2 h-5 w-5 text-icon-green" />
@@ -155,7 +136,7 @@ export function DashboardSidebar({ className }: SidebarProps) {
 
               <Button
                 variant="ghost"
-                className={cn("w-full justify-start", pathname?.includes("/dashboard/invites") && "bg-gray-100/80")}
+                className={cn("w-full !justify-start", pathname?.includes("/dashboard/invites") && "bg-gray-100/80")}
                 onClick={() => navigateTo("/dashboard/invites")}
               >
                 <Mail className="mr-2 h-5 w-5 text-icon-pink" />
@@ -164,7 +145,7 @@ export function DashboardSidebar({ className }: SidebarProps) {
 
               <Button
                 variant="ghost"
-                className={cn("w-full justify-start", pathname?.includes("/dashboard/qrcodes") && "bg-gray-100/80")}
+                className={cn("w-full !justify-start", pathname?.includes("/dashboard/qrcodes") && "bg-gray-100/80")}
                 onClick={() => navigateTo("/dashboard/qrcodes")}
               >
                 <QrCode className="mr-2 h-5 w-5 text-icon-indigo" />
@@ -177,7 +158,7 @@ export function DashboardSidebar({ className }: SidebarProps) {
             <div className="space-y-1">
               <Button
                 variant="ghost"
-                className={cn("w-full justify-start", pathname?.includes("/dashboard/invoices") && "bg-gray-100/80")}
+                className={cn("w-full !justify-start", pathname?.includes("/dashboard/invoices") && "bg-gray-100/80")}
                 onClick={() => navigateTo("/dashboard/invoices")}
               >
                 <CreditCard className="mr-2 h-5 w-5 text-icon-yellow" />
@@ -186,7 +167,7 @@ export function DashboardSidebar({ className }: SidebarProps) {
 
               <Button
                 variant="ghost"
-                className={cn("w-full justify-start", pathname?.includes("/dashboard/statistics") && "bg-gray-100/80")}
+                className={cn("w-full !justify-start", pathname?.includes("/dashboard/statistics") && "bg-gray-100/80")}
                 onClick={() => navigateTo("/dashboard/statistics")}
               >
                 <BarChart3 className="mr-2 h-5 w-5 text-icon-teal" />
@@ -195,7 +176,7 @@ export function DashboardSidebar({ className }: SidebarProps) {
 
               <Button
                 variant="ghost"
-                className={cn("w-full justify-start", pathname?.includes("/dashboard/settings") && "bg-gray-100/80")}
+                className={cn("w-full !justify-start", pathname?.includes("/dashboard/settings") && "bg-gray-100/80")}
                 onClick={() => navigateTo("/dashboard/settings")}
               >
                 <Settings className="mr-2 h-5 w-5 text-icon-cyan" />
@@ -206,16 +187,6 @@ export function DashboardSidebar({ className }: SidebarProps) {
         </div>
       </div>
 
-      {/* Quick Event Creation SlideOver */}
-      <SlideOver
-        open={quickEventOpen}
-        onClose={() => setQuickEventOpen(false)}
-        title="Quick Add Event"
-        side="right"
-        width="400px"
-      >
-        <QuickEventForm onSubmit={handleQuickEventSubmit} onCancel={() => setQuickEventOpen(false)} />
-      </SlideOver>
     </>
   )
 }

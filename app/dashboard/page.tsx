@@ -14,8 +14,22 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { RecentEventsList } from "@/components/dashboard/recent-events-list"
+import { eventService } from "@/lib/services/event-service"
+import { userService } from "@/lib/services/user-service"
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+
+  // Get counts and recent data
+  const [eventsResult, usersResult, upcomingEventsResult] = await Promise.all([
+    eventService.getEvents(1, 1),
+    userService.getUsers(1, 1),
+    eventService.getUpcomingEvents(1, 5),
+  ])
+
+  const tootalEvents = eventsResult.meta?.total || 0
+  const totalUsers = usersResult.meta?.total || 0
+  const upcomingEvents = upcomingEventsResult.data || []
+
   return (
     <div className="flex-1 space-y-6 p-6">
       <div className="flex items-center justify-between">
@@ -41,12 +55,12 @@ export default function DashboardPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card className="card-modern">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex !flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Events</CardTitle>
             <Calendar className="h-4 w-4 text-icon-purple" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
+            <div className="text-2xl font-bold">{tootalEvents}</div>
             <p className="text-xs text-muted-foreground">
               <TrendingUp className="mr-1 inline h-3 w-3 text-success-DEFAULT" />
               <span className="text-success-DEFAULT">+2.5%</span> from last month
@@ -55,12 +69,12 @@ export default function DashboardPage() {
         </Card>
 
         <Card className="card-modern">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex !flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Active Users</CardTitle>
             <Users className="h-4 w-4 text-icon-green" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">342</div>
+            <div className="text-2xl font-bold">{totalUsers}</div>
             <p className="text-xs text-muted-foreground">
               <TrendingUp className="mr-1 inline h-3 w-3 text-success-DEFAULT" />
               <span className="text-success-DEFAULT">+12.2%</span> from last month
@@ -69,7 +83,7 @@ export default function DashboardPage() {
         </Card>
 
         <Card className="card-modern">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex !flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
             <Building className="h-4 w-4 text-icon-orange" />
           </CardHeader>
@@ -83,7 +97,7 @@ export default function DashboardPage() {
         </Card>
 
         <Card className="card-modern">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex !flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Revenue</CardTitle>
             <CreditCard className="h-4 w-4 text-icon-yellow" />
           </CardHeader>
@@ -101,10 +115,10 @@ export default function DashboardPage() {
         <Card className="col-span-6 md:col-span-4 card-modern">
           <CardHeader>
             <CardTitle>Recent Events</CardTitle>
-            <CardDescription>You have 12 total events, with 3 upcoming in the next 30 days.</CardDescription>
+            <CardDescription>You have {tootalEvents} total events, with {upcomingEvents.length} upcoming in the next 30 days.</CardDescription>
           </CardHeader>
           <CardContent>
-            <RecentEventsList />
+            <RecentEventsList recentEvents={upcomingEvents} />
           </CardContent>
           <CardFooter>
             <Button asChild variant="outline" className="w-full btn-modern">
@@ -129,19 +143,19 @@ export default function DashboardPage() {
               </Link>
             </Button>
             <Button asChild variant="outline" className="justify-start btn-modern">
-              <Link href="/dashboard/clients/new">
+              <Link href="/dashboard/clients">
                 <Building className="mr-2 h-4 w-4 text-icon-orange" />
                 Add Client
               </Link>
             </Button>
             <Button asChild variant="outline" className="justify-start btn-modern">
-              <Link href="/dashboard/users/new">
+              <Link href="/dashboard/users">
                 <Users className="mr-2 h-4 w-4 text-icon-green" />
                 Add User
               </Link>
             </Button>
             <Button asChild variant="outline" className="justify-start btn-modern">
-              <Link href="/dashboard/invoices/new">
+              <Link href="/dashboard/invoices">
                 <CreditCard className="mr-2 h-4 w-4 text-icon-yellow" />
                 Create Invoice
               </Link>
