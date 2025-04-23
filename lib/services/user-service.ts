@@ -3,7 +3,6 @@ import { userRepository } from '../repositories/base-repository';
 export const userService = {
    async getUsers(page = 1, limit = 10) {
       const skip = (page - 1) * limit;
-      console.log('skip', skip);
       const [data, total] = await Promise.all([
          userRepository.findAll({
             skip,

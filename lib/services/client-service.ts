@@ -1,34 +1,37 @@
-import prisma from '@/lib/db';
-import type { Client } from '@prisma/client';
-import { createRepository } from '../repositories/base-repository';
+import { clientRepository } from '../repositories/client-repository';
 
-// Create base repository functions
-const baseRepository = createRepository<Client>(prisma.client);
+export const clientService = {
+   async getClients(page = 1, limit = 10) {
+      const skip = (page - 1) * limit;
+      const [data, total] = await Promise.all([
+         clientRepository.findAllWithRelations(),
+         clientRepository.count(),
+      ]);
 
-// Extended client repository with custom functions
-export const clientRepository = {
-   ...baseRepository,
-
-   async findWithInvoices(id: string) {
-      return prisma.client.findUnique({
-         where: { id },
-         include: {
-            invoices: true,
-            events: true,
+      return {
+         data,
+         meta: {
+            total,
+            page,
+            limit,
+            pageCount: Math.ceil(total / limit),
          },
-      });
+      };
    },
 
-   async findAllWithRelations() {
-      return prisma.client.findMany({
-         include: {
-            _count: {
-               select: {
-                  invoices: true,
-                  events: true,
-               },
-            },
-         },
-      });
+   async getClient(id: string) {
+      return clientRepository.findWithInvoices(id);
+   },
+
+   async createClient(data: any) {
+      return clientRepository.create(data);
+   },
+
+   async updateClient(id: string, data: any) {
+      return clientRepository.update(id, data);
+   },
+
+   async deleteClient(id: string) {
+      return clientRepository.delete(id);
    },
 };
