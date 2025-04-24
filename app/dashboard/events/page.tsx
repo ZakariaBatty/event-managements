@@ -177,7 +177,7 @@ export default function EventsPage() {
       <SlideOver
         open={slideOverOpen}
         onClose={handleCloseSlideOver}
-        side="left"
+        side="right"
         title={
           slideOverMode === "create" ? "Create New Event" : slideOverMode === "edit" ? "Edit Event" : "Event Details"
         }

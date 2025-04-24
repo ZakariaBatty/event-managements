@@ -18,7 +18,7 @@ import Image from "next/image"
 interface ClientFormProps {
   client?: any
   mode: "create" | "edit" | "view"
-  onSubmit: () => void
+  onSubmit: (formData: FormData) => void | Promise<void>
   onCancel: () => void
 }
 
@@ -75,7 +75,17 @@ export function ClientForm({ client, mode, onSubmit, onCancel }: ClientFormProps
     e.preventDefault()
     // In a real app, you would call an API to save the client
     console.log("Form data to save:", formData)
-    onSubmit()
+    const formDataToSubmit = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          formDataToSubmit.append(`${key}[${index}]`, item);
+        });
+      } else {
+        formDataToSubmit.append(key, value as string);
+      }
+    });
+    onSubmit(formDataToSubmit);
   }
 
   const isReadOnly = mode === "view"

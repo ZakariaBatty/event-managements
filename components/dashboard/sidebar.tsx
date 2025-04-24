@@ -19,8 +19,6 @@ import {
   X,
   PlusCircle,
 } from "lucide-react"
-import { SlideOver } from "@/components/dashboard/slide-over"
-import { QuickEventForm } from "@/components/dashboard/quick-event-form"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -31,7 +29,6 @@ export function DashboardSidebar({ className }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [quickEventOpen, setQuickEventOpen] = useState(false)
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)

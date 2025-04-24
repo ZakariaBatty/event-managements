@@ -85,7 +85,7 @@ export function DataTable({ data, columns, onEdit, onDelete, onView }: DataTable
                     {column.label}
                   </TableHead>
                 ))}
-                <TableHead className="w-[120px] text-right">Actions</TableHead>
+                <TableHead className="w-[100px] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -124,7 +124,7 @@ export function DataTable({ data, columns, onEdit, onDelete, onView }: DataTable
                             onClick={() => onView(item)}
                             className="h-8 w-8 rounded-lg hover:bg-accent/10 hover:text-accent"
                           >
-                            <Eye className="h-4 w-4 text-accent" />
+                            <Eye className="h-4 w-4 text-success" />
                           </Button>
                         )}
                         <Button
