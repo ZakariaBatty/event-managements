@@ -72,11 +72,9 @@ export function createRepository<T>(model: any) {
 // Export repository instances for each model
 export const eventRepository = createRepository(prisma.event);
 export const userRepository = createRepository(prisma.user);
-export const clientRepository = createRepository(prisma.client);
+export const clientRepository = createRepository(prisma.contact);
 export const speakerRepository = createRepository(prisma.speaker);
-export const partnerRepository = createRepository(prisma.partner);
 export const invoiceRepository = createRepository(prisma.invoice);
 export const qrCodeRepository = createRepository(prisma.qRCode);
 export const sideEventItemRepository = createRepository(prisma.sideEventItem);
 // export const sideEventDayRepository = createRepository(prisma.sideEventDay);
-export const inviteRepository = createRepository(prisma.invite);

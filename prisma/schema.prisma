@@ -41,7 +41,9 @@ model Event {
   id          String      @id @default(cuid())
   title       String
   description String?
-  Organizers  Json?
+  organizers  Json?
+  Goals       String?
+  Themes      Json?
   startDate   DateTime
   endDate     DateTime
   location    String?
@@ -57,28 +59,10 @@ model Event {
   speakers    Speaker[]
   sideEventItem    SideEventItem[]
   locations   Location[]
-  partners    Partner[]
+  contacts    Contact[]
   qrCodes     QRCode[]
-  invites     Invite[]
-  clients     Client[]
   invoices    Invoice[]
   country   CountryEvent[] 
-}
-
-model Client {
-  id        String       @id @default(cuid())
-  name      String
-  email     String
-  phone     String?
-  company   String?
-  address   String?
-  city      String?
-  country   String?
-  notes     String?
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  events    Event[]
-  invoices  Invoice[]
 }
 
 model Invoice {
@@ -89,8 +73,8 @@ model Invoice {
   dueDate   DateTime
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
-  clientId  String
-  client    Client        @relation(fields: [clientId], references: [id])
+  contactId  String
+  contact    Contact        @relation(fields: [contactId], references: [id])
   eventId   String
   event     Event         @relation(fields: [eventId], references: [id])
 }
@@ -140,19 +124,6 @@ model Location {
   events      Event[]
 }
 
-model Partner {
-  id          String      @id @default(cuid())
-  name        String
-  type        PartnerType @default(SPONSOR)
-  website     String?
-  description String?
-  logo        String?
-  tier        String?
-  visibility  Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  events      Event[]
-}
 
 model QRCode {
   id               String     @id @default(cuid())
@@ -168,20 +139,33 @@ model QRCode {
   event            Event?     @relation(fields: [eventId], references: [id])
 }
 
-model Invite {
-  id          String       @id @default(cuid())
-  email       String
-  name        String?
-  status      InviteStatus @default(PENDING)
-  token       String       @unique
+model Contact {
+  id          String      @id @default(cuid())
+  type        ContactType
+  name        String
+  email       String?
+  phone       String?
+  company     String?
+  address     String?
+  city        String?
+  notes       String?
+  website     String?
+  description String?
+  logo        String?
+  tier        String?
+  status      ContactStatus @default(PENDING)
+  token       String?       @unique
   expiresAt   DateTime?
   message     String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  eventId     String
-  event       Event        @relation(fields: [eventId], references: [id])
-  country     CountryInvite[]     
+  visibility  Boolean?      @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  eventId     String?
+  event       Event?        @relation(fields: [eventId], references: [id])
+  invoices    Invoice[]
+  countryContacts CountryContact[] 
 }
+
 
 model Hotel {
   id          String   @id @default(cuid())
@@ -207,7 +191,7 @@ model Country {
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
   events    CountryEvent[]  // Added relation field for CountryEvent
-  invites   CountryInvite[] // Added relation field for CountryInvite
+  Contacts   CountryContact[] // Added relation field for CountryInvite
 }
 
 model CountryEvent {
@@ -222,16 +206,16 @@ model CountryEvent {
   @@id([eventId, countryId])
 }
 
-model CountryInvite {
-  inviteId    String
+model CountryContact {
+  contactId    String
   countryId    String
   createdAt DateTime @default(now())
 
   // Relations
-  invites      Invite     @relation(fields: [inviteId], references: [id], onDelete: Cascade)
+  Contact      Contact     @relation(fields: [contactId], references: [id], onDelete: Cascade)
   country      Country     @relation(fields: [countryId], references: [id], onDelete: Cascade)
 
-  @@id([inviteId, countryId])
+  @@id([contactId, countryId])
 }
 
 enum Role {
@@ -286,3 +270,22 @@ enum InviteStatus {
   DECLINED
   EXPIRED
 }
+
+enum ContactType {
+  CLIENT
+  INVITE
+  PARTNER
+  VISITOR
+  EXHIBITOR
+  SPONSOR
+  MEDIA_PARTNER
+  COMMUNITY_PARTNER
+  TECHNOLOGY_PARTNER
+}
+
+enum ContactStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+

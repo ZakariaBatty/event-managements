@@ -4,29 +4,29 @@ A comprehensive event management platform built with Next.js, Prisma, and Postgr
 
 ## Features
 
-- Event creation and management
-- Speaker management
-- Session scheduling
-- Location management
-- Client and invoice management
-- QR code generation
-- Invitation system
-- User management
-- Responsive dashboard
+-  Event creation and management
+-  Speaker management
+-  Session scheduling
+-  Location management
+-  Client and invoice management
+-  QR code generation
+-  Invitation system
+-  User management
+-  Responsive dashboard
 
 ## Tech Stack
 
-- **Frontend**: Next.js 13 (App Router), React, Tailwind CSS, shadcn/ui
-- **Backend**: Next.js API Routes, Server Actions
-- **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: NextAuth.js
+-  **Frontend**: Next.js 13 (App Router), React, Tailwind CSS, shadcn/ui
+-  **Backend**: Next.js API Routes, Server Actions
+-  **Database**: PostgreSQL with Prisma ORM
+-  **Authentication**: NextAuth.js
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 16+
-- PostgreSQL database
+-  Node.js 16+
+-  PostgreSQL database
 
 ### Installation
 
@@ -42,19 +42,24 @@ A comprehensive event management platform built with Next.js, Prisma, and Postgr
    \`\`\`
 
 3. Set up environment variables:
-   - Copy `.env.example` to `.env`
-   - Update the `DATABASE_URL` with your PostgreSQL connection string
-   - Set up other environment variables as needed
+
+   -  Copy `.env.example` to `.env`
+   -  Update the `DATABASE_URL` with your PostgreSQL connection string
+   -  Set up other environment variables as needed
 
 4. Set up the database:
    \`\`\`bash
+
    # Generate Prisma client
+
    npx prisma generate
 
    # Run migrations
+
    npx prisma migrate dev
 
    # Seed the database with initial data
+
    npm run db:seed
    \`\`\`
 
@@ -69,16 +74,16 @@ A comprehensive event management platform built with Next.js, Prisma, and Postgr
 
 The application uses the following main entities:
 
-- Users
-- Events
-- Clients
-- Invoices
-- Speakers
-- Sessions
-- Locations
-- Partners
-- QR Codes
-- Invites
+-  Users
+-  Events
+-  Clients
+-  Invoices
+-  Speakers
+-  Sessions
+-  Locations
+-  Partners
+-  QR Codes
+-  Invites
 
 ## Deployment
 
@@ -92,3 +97,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 \`\`\`
 
 ## 14. Let's add the shadcn/ui sidebar component
+
+## seed.ts
+
+npx tsc prisma/seed.ts && node prisma/seed.js
