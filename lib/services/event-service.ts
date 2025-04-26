@@ -5,7 +5,8 @@ import { speakerRepository } from '../repositories/base-repository';
 export const eventService = {
    async getEvents(page = 1, limit = 10) {
       const skip = (page - 1) * limit;
-      const [data, total] = await Promise.all([
+
+      const [events, total] = await Promise.all([
          eventRepository.findAllWithStats({
             skip,
             take: limit,
@@ -16,15 +17,39 @@ export const eventService = {
          eventRepository.count(),
       ]);
 
-      return {
-         data,
-         meta: {
-            total,
-            page,
-            limit,
-            pageCount: Math.ceil(total / limit),
-         },
+      const data = events.map((event: any) => {
+         const counts = {
+            CLIENT: 0,
+            INVITE: 0,
+            PARTNER: 0,
+         };
+
+         event.contacts.forEach((c: { type: keyof typeof counts }) => {
+            if (counts[c.type] !== undefined) {
+               counts[c.type]++;
+            }
+         });
+
+         return {
+            ...event,
+            statistics: {
+               sessions: event._count.sideEventItem,
+               speakers: event._count.speakers,
+               partners: counts.PARTNER,
+               registrations: counts.INVITE,
+               clients: counts.CLIENT,
+            },
+         };
+      });
+
+      const meta = {
+         total,
+         page,
+         limit,
+         pageCount: Math.ceil(total / limit),
       };
+
+      return { data, meta };
    },
 
    async getEvent(id: string) {
@@ -33,7 +58,7 @@ export const eventService = {
 
    async getUpcomingEvents(page = 1, limit = 5) {
       const skip = (page - 1) * limit;
-      const [data, total] = await Promise.all([
+      const [events, total] = await Promise.all([
          eventRepository.getUpcomingEvents(limit),
          eventRepository.count({
             startDate: {
@@ -42,15 +67,25 @@ export const eventService = {
          }),
       ]);
 
-      return {
-         data,
-         meta: {
-            total,
-            page,
-            limit,
-            pageCount: Math.ceil(total / limit),
-         },
+      const data = events.map((event: any) => {
+         const inviteCount = event.contacts.filter(
+            (c: { type: string }) => c.type === 'INVITE'
+         ).length;
+
+         return {
+            ...event,
+            inviteCount,
+         };
+      });
+
+      const meta = {
+         total,
+         page,
+         limit,
+         pageCount: Math.ceil(total / limit),
       };
+
+      return { data, meta };
    },
 
    async createEvent(data: any) {

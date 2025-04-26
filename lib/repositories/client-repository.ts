@@ -1,31 +1,31 @@
 import prisma from '@/lib/db';
-import type { Client } from '@prisma/client';
 import { createRepository } from '../repositories/base-repository';
+import { Contact } from '@prisma/client';
 
 // Create base repository functions
-const baseRepository = createRepository<Client>(prisma.client);
+const baseRepository = createRepository<Contact>(prisma.contact);
 
 // Extended client repository with custom functions
 export const clientRepository = {
    ...baseRepository,
 
    async findWithInvoices(id: string) {
-      return prisma.client.findUnique({
+      return prisma.contact.findUnique({
          where: { id },
          include: {
             invoices: true,
-            events: true,
          },
       });
    },
 
-   async findAllWithRelations() {
-      return prisma.client.findMany({
+   async findAllWithRelations(options: any = {}) {
+      return prisma.contact.findMany({
+         ...options,
+         where: { type: 'CLIENT' },
          include: {
             _count: {
                select: {
                   invoices: true,
-                  events: true,
                },
             },
          },

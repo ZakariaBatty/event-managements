@@ -13,15 +13,15 @@ export const invoiceRepository = {
       return prisma.invoice.findMany({
          ...options,
          include: {
-            client: true,
+            contact: true,
             event: true,
          },
       });
    },
 
-   async findByClient(clientId: string) {
+   async findByClient(contactId: string) {
       return prisma.invoice.findMany({
-         where: { clientId },
+         where: { contactId },
          include: {
             event: true,
          },
@@ -35,7 +35,7 @@ export const invoiceRepository = {
       return prisma.invoice.findMany({
          where: { eventId },
          include: {
-            client: true,
+            contact: true,
          },
          orderBy: {
             createdAt: 'desc',

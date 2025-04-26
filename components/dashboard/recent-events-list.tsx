@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 
 // Mock data for recent events
 type PropsEvent = {
-  recentEvents: (Event & { _count: { invites: number } })[]
+  recentEvents: (Event & { inviteCount: number })[]
 }
 
 
@@ -40,7 +40,7 @@ export function RecentEventsList({ recentEvents }: PropsEvent) {
                 </div>
                 <div className="flex items-center gap-1">
                   <Users className="h-4 w-4" />
-                  <span>{event._count.invites}</span>
+                  <span>{event.inviteCount}</span>
                 </div>
               </div>
             </div>

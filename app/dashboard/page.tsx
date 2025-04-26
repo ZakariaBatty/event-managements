@@ -16,24 +16,28 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { RecentEventsList } from "@/components/dashboard/recent-events-list"
 import { eventService } from "@/lib/services/event-service"
 import { userService } from "@/lib/services/user-service"
-// import { clientService } from "@/lib/services/client-service"
+import { clientService } from "@/lib/services/client-service"
 import { invoiceService } from "@/lib/services/invoice-service"
 import { Suspense } from "react"
+import { console } from "inspector"
 
 export default async function DashboardPage() {
 
   // Get counts and recent data
-  const [eventsResult, usersResult, invoicesResult, upcomingEventsResult] = await Promise.all([
+  const [eventsResult, usersResult, clientResult, invoicesResult, upcomingEventsResult] = await Promise.all([
     eventService.getEvents(1, 1),
     userService.getUsers(1, 1),
-    // clientService.getClients(1, 1),
+    clientService.getClients(1, 1),
     invoiceService.getInvoices(1, 1),
     eventService.getUpcomingEvents(1, 5),
   ])
 
+
+  console.log(invoicesResult);
+
   const totalEvents = eventsResult.meta?.total || 0
   const totalUsers = usersResult.meta?.total || 0
-  const totalClients = 0
+  const totalClients = clientResult.meta?.total || 0
   const totalInvoices = invoicesResult.meta?.total || 0
   const upcomingEvents = upcomingEventsResult.data || []
 
