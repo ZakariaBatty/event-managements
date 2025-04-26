@@ -3,11 +3,25 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Edit, Search, Trash, Filter, Download, RefreshCw, Eye, ArrowUpRight } from "lucide-react"
+import {
+  Edit,
+  Search,
+  Trash,
+  Filter,
+  Download,
+  RefreshCw,
+  Eye,
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface DataTableProps {
   data: any[]
@@ -21,11 +35,19 @@ interface DataTableProps {
   onEdit: (item: any) => void
   onDelete: (item: any) => void
   onView?: (item: any) => void
+  pagination?: {
+    total: number
+    page: number
+    limit: number
+    pageCount: number
+  }
 }
 
-export function DataTable({ data, columns, onEdit, onDelete, onView }: DataTableProps) {
+export function DataTable({ data, columns, onEdit, onDelete, onView, pagination }: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   const filteredData = data.filter((item) => {
     if (!searchTerm) return true
@@ -46,6 +68,31 @@ export function DataTable({ data, columns, onEdit, onDelete, onView }: DataTable
       onView(item)
     }
   }
+
+  const createQueryString = (name: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set(name, value)
+    return params.toString()
+  }
+
+  const handlePageChange = (newPage: number) => {
+    router.push(`${pathname}?${createQueryString("page", newPage.toString())}`)
+  }
+
+  const handleLimitChange = (newLimit: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("limit", newLimit)
+    params.set("page", "1") // Reset to first page when changing limit
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
+  // Calculate pagination values
+  const currentPage = pagination?.page || 1
+  const totalPages = pagination?.pageCount || 1
+  const totalItems = pagination?.total || 0
+  const itemsPerPage = pagination?.limit || 10
+  const showingFrom = totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1
+  const showingTo = Math.min(currentPage * itemsPerPage, totalItems)
 
   return (
     <div className="space-y-4">
@@ -152,6 +199,103 @@ export function DataTable({ data, columns, onEdit, onDelete, onView }: DataTable
           </Table>
         </div>
       </div>
+
+      {pagination && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
+          <div className="text-sm text-gray-500">
+            Showing {showingFrom} to {showingTo} of {totalItems} entries
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center mr-4">
+              <span className="text-sm text-gray-500 mr-2">Show</span>
+              <Select value={itemsPerPage.toString()} onValueChange={handleLimitChange}>
+                <SelectTrigger className="w-[80px] h-9 rounded-lg">
+                  <SelectValue placeholder={itemsPerPage.toString()} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                </SelectContent>
+              </Select>
+              <span className="text-sm text-gray-500 ml-2">per page</span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9 rounded-lg"
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage <= 1}
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9 rounded-lg"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage <= 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+
+              <div className="flex items-center gap-1 mx-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  // Show pages around current page
+                  let pageNum = currentPage
+                  if (currentPage <= 3) {
+                    pageNum = i + 1
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i
+                  } else {
+                    pageNum = currentPage - 2 + i
+                  }
+
+                  // Ensure page numbers are within valid range
+                  if (pageNum > 0 && pageNum <= totalPages) {
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={currentPage === pageNum ? "default" : "outline"}
+                        size="icon"
+                        className="h-9 w-9 rounded-lg"
+                        onClick={() => handlePageChange(pageNum)}
+                      >
+                        {pageNum}
+                      </Button>
+                    )
+                  }
+                  return null
+                })}
+              </div>
+
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9 rounded-lg"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage >= totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9 rounded-lg"
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage >= totalPages}
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
