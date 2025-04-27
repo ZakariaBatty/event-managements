@@ -132,7 +132,7 @@ export function EventForm({ event, mode, onSubmit, onCancel }: EventFormProps) {
                 <Calendar
                   mode="single"
                   selected={formData.startDate || undefined}
-                  onSelect={(date) => setFormData({ ...formData, startDate: date })}
+                  onSelect={(date) => setFormData({ ...formData, startDate: date || null })}
                   initialFocus
                 />
               </PopoverContent>
@@ -161,7 +161,7 @@ export function EventForm({ event, mode, onSubmit, onCancel }: EventFormProps) {
                 <Calendar
                   mode="single"
                   selected={formData.endDate || undefined}
-                  onSelect={(date) => setFormData({ ...formData, endDate: date })}
+                  onSelect={(date) => setFormData({ ...formData, endDate: date || null })}
                   initialFocus
                 />
               </PopoverContent>

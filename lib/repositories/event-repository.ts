@@ -12,6 +12,13 @@ export const eventRepository = {
       return prisma.event.findUnique({
          where: { id },
          include: {
+            _count: {
+               select: {
+                  sideEventItem: true,
+                  speakers: true,
+                  contacts: true,
+               },
+            },
             sideEventItem: {
                include: {
                   speakers: true,
@@ -28,7 +35,7 @@ export const eventRepository = {
                   type: { in: ['CLIENT', 'INVITE', 'PARTNER'] },
                },
                include: {
-                  countryContacts: true,
+                  country: true,
                },
             },
          },

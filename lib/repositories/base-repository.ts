@@ -77,4 +77,3 @@ export const speakerRepository = createRepository(prisma.speaker);
 export const invoiceRepository = createRepository(prisma.invoice);
 export const qrCodeRepository = createRepository(prisma.qRCode);
 export const sideEventItemRepository = createRepository(prisma.sideEventItem);
-// export const sideEventDayRepository = createRepository(prisma.sideEventDay);

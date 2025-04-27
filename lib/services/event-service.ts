@@ -24,11 +24,15 @@ export const eventService = {
             PARTNER: 0,
          };
 
-         event.contacts.forEach((c: { type: keyof typeof counts }) => {
-            if (counts[c.type] !== undefined) {
-               counts[c.type]++;
-            }
-         });
+         event.contacts
+            .filter((c: any) =>
+               ['INVITE', 'PARTNER', 'SPONSOR'].includes(c.type)
+            )
+            .forEach((c: { type: keyof typeof counts }) => {
+               if (counts[c.type] !== undefined) {
+                  counts[c.type]++;
+               }
+            });
 
          return {
             ...event,
@@ -53,7 +57,51 @@ export const eventService = {
    },
 
    async getEvent(id: string) {
-      return eventRepository.findWithDetails(id);
+      const event = await eventRepository.findWithDetails(id);
+
+      if (!event) {
+         return { data: null };
+      }
+
+      const counts = {
+         SPONSOR: 0,
+         INVITE: 0,
+         PARTNER: 0,
+      };
+
+      event.contacts.forEach((c: any) => {
+         if (['INVITE', 'PARTNER', 'SPONSOR'].includes(c.type)) {
+            counts[c.type as keyof typeof counts]++;
+         }
+      });
+
+      return {
+         ...event,
+         id: event.id,
+         title: event.title,
+         coverImage: event.coverImage,
+         logo: event.logo,
+         status: event.status,
+         description: event.description,
+         organizers: event.organizers,
+         goals: event.Goals,
+         themes: event.Themes,
+         startDate: event.startDate,
+         endDate: event.endDate,
+         location: event.location,
+         qrCodes: event.qrCodes,
+         invoices: event.invoices,
+         contacts: event.contacts,
+         sessions: event.sideEventItem,
+         speakers: [],
+         statistics: {
+            sessions: event._count.sideEventItem,
+            speakers: event._count.speakers,
+            partners: counts.PARTNER,
+            registrations: counts.INVITE,
+            sponsors: counts.SPONSOR,
+         },
+      };
    },
 
    async getUpcomingEvents(page = 1, limit = 5) {

@@ -62,7 +62,6 @@ model Event {
   contacts    Contact[]
   qrCodes     QRCode[]
   invoices    Invoice[]
-  country   CountryEvent[] 
 }
 
 model Invoice {
@@ -163,7 +162,11 @@ model Contact {
   eventId     String?
   events       Event?        @relation(fields: [eventId], references: [id])
   invoices    Invoice[]
-  countryContacts CountryContact[] 
+ 
+ // Here: One-to-one with Country
+  countryId   String?       @unique
+  country     Country?      @relation(fields: [countryId], references: [id])
+
 }
 
 
@@ -190,32 +193,8 @@ model Country {
   code      String          @unique
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
-  events    CountryEvent[]  // Added relation field for CountryEvent
-  Contacts   CountryContact[] // Added relation field for CountryInvite
-}
-
-model CountryEvent {
-  eventId    String
-  countryId    String
-  createdAt DateTime @default(now())
-
-  // Relations
-  invites      Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  country      Country     @relation(fields: [countryId], references: [id], onDelete: Cascade)
-
-  @@id([eventId, countryId])
-}
-
-model CountryContact {
-  contactId    String
-  countryId    String
-  createdAt DateTime @default(now())
-
-  // Relations
-  Contact      Contact     @relation(fields: [contactId], references: [id], onDelete: Cascade)
-  country      Country     @relation(fields: [countryId], references: [id], onDelete: Cascade)
-
-  @@id([contactId, countryId])
+    // Reverse relation (optional)
+  contacts    Contact?
 }
 
 enum Role {
