@@ -1,0 +1,274 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String        @id @default(cuid())
+  name            String?
+  email           String        @unique
+  emailVerified   DateTime?
+  image           String?
+  password        String?
+  number          String?
+  role            Role          @default(USER)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  organisation  Organisation?  @relation("UserOrganisation")
+}
+
+
+model Organisation {
+  id        String    @id @default(cuid())
+  companyName      String
+  email     String    @unique
+  logoUrl   String?
+  website   String?
+  numberCompany  String?
+  address   String?
+  city      String?
+  country   String?
+  events          Event[]
+  user      User?     @relation("UserOrganisation", fields: [userId], references: [id], onDelete: SetNull)
+  userId    String?   @unique
+}
+
+model Event {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  organizers  Json?
+  Goals       String?
+  Themes      Json?
+  startDate   DateTime
+  endDate     DateTime
+  location    String?
+  logo        String?
+  coverImage  String?
+  status      EventStatus @default(DRAFT)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  organisationId      String
+  organisation        Organisation        @relation(fields: [organisationId], references: [id])
+  speakers    Speaker[]
+  sideEventItem    SideEventItem[]
+  locations   Location[]
+  contacts    Contact[]
+  qrCodes     QRCode[]
+  invoices    Invoice[]
+}
+
+model Invoice {
+  id        String        @id @default(cuid())
+  number    String
+  amount    Float
+  status    InvoiceStatus @default(DRAFT)
+  dueDate   DateTime
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  contactId  String
+  contact    Contact        @relation(fields: [contactId], references: [id])
+  eventId   String
+  event     Event         @relation(fields: [eventId], references: [id])
+}
+
+model Speaker {
+  id           String    @id @default(cuid())
+  name         String
+  organization String?
+  bio          String?
+  title        String?
+  avatar       String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  events       Event[]
+  sideEventItem     SideEventItem[]
+}
+
+model SideEventItem {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  time        String?
+  type        SessionType @default(MASTER_CLASS)
+  location    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  eventId     String
+  event       Event       @relation(fields: [eventId], references: [id])
+  speakers    Speaker[]
+}
+
+model Location {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  city        String
+  country     String
+  postalCode  String?
+  description String?
+  capacity    Int?
+  latitude    Float?
+  longitude   Float?
+  visibility  Boolean     @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  events      Event[]
+}
+
+
+model QRCode {
+  id               String     @id @default(cuid())
+  name             String
+  type             QRCodeType @default(URL)
+  content          String
+  description      String?
+  foregroundColor  String?     @default("#000000")
+  backgroundColor  String?     @default("#FFFFFF")
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  eventId          String?
+  event            Event?     @relation(fields: [eventId], references: [id])
+}
+
+model Contact {
+  id          String      @id @default(cuid())
+  type        ContactType
+  name        String
+  email       String?
+  phone       String?
+  company     String?
+  address     String?
+  city        String?
+  notes       String?
+  website     String?
+  description String?
+  logo        String?
+  tier        String?
+  status      ContactStatus @default(PENDING)
+  token       String?       @unique
+  expiresAt   DateTime?
+  message     String?
+  visibility  Boolean?      @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  eventId     String?
+  events       Event?        @relation(fields: [eventId], references: [id])
+  invoices    Invoice[]
+ 
+ // Here: One-to-one with Country
+  countryId   String?       @unique
+  country     Country?      @relation(fields: [countryId], references: [id])
+
+}
+
+
+model Hotel {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  city        String
+  country     String
+  postalCode  String?
+  description String?
+  capacity    Int?
+  latitude    Float?
+  longitude   Float?
+  visibility  Boolean     @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model Country {
+  id        String          @id @default(cuid())
+  name      String          @unique
+  code      String          @unique
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+    // Reverse relation (optional)
+  contacts    Contact?
+}
+
+enum Role {
+  USER
+  ORGANISER
+  ADMIN
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  COMPLETED
+}
+
+enum SessionType {
+  MASTER_CLASS
+  WORKSHOP
+  KEYNOTE
+  PANEL
+  NETWORKING
+
+  // SIDE_EVENT
+  // SHOWCASE
+  // ROUNDTABLE
+}
+
+enum PartnerType {
+  SPONSOR
+  MEDIA_PARTNER
+  COMMUNITY_PARTNER
+  TECHNOLOGY_PARTNER
+}
+
+enum QRCodeType {
+  URL
+  TEXT
+  EMAIL
+  PHONE
+  SMS
+  WIFI
+  VCARD
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+
+enum ContactType {
+  CLIENT
+  INVITE
+  PARTNER
+  VISITOR
+  EXHIBITOR
+  SPONSOR
+  MEDIA_PARTNER
+  COMMUNITY_PARTNER
+  TECHNOLOGY_PARTNER
+}
+
+enum ContactStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+

@@ -193,11 +193,11 @@ export default function Home() {
     { label: "Roundtable", value: "ROUNDTABLE" },
   ]
 
-  const handleFilterSpeakers = useCallback((filtered) => {
+  const handleFilterSpeakers = useCallback((filtered: any) => {
     setFilteredSpeakers(filtered)
   }, [])
 
-  const handleFilterProgram = useCallback((filtered) => {
+  const handleFilterProgram = useCallback((filtered: any) => {
     setFilteredProgram(filtered)
   }, [])
 
