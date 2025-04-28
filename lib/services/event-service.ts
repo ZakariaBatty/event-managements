@@ -69,6 +69,10 @@ export const eventService = {
          PARTNER: 0,
       };
 
+      const partners = event.contacts.filter((c: any) => c.type === 'PARTNER');
+      const sponsors = event.contacts.filter((c: any) => c.type === 'SPONSOR');
+      const invites = event.contacts.filter((c: any) => c.type === 'INVITE');
+
       event.contacts.forEach((c: any) => {
          if (['INVITE', 'PARTNER', 'SPONSOR'].includes(c.type)) {
             counts[c.type as keyof typeof counts]++;
@@ -76,7 +80,6 @@ export const eventService = {
       });
 
       return {
-         ...event,
          id: event.id,
          title: event.title,
          coverImage: event.coverImage,
@@ -91,9 +94,11 @@ export const eventService = {
          location: event.location,
          qrCodes: event.qrCodes,
          invoices: event.invoices,
-         contacts: event.contacts,
+         partners,
+         sponsors,
+         invites,
          sessions: event.sideEventItem,
-         speakers: [],
+         speakers: event.speakers,
          statistics: {
             sessions: event._count.sideEventItem,
             speakers: event._count.speakers,

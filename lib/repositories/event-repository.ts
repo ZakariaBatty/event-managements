@@ -24,6 +24,15 @@ export const eventRepository = {
                   speakers: true,
                },
             },
+            speakers: {
+               include: {
+                  _count: {
+                     select: {
+                        sideEventItem: true,
+                     },
+                  },
+               },
+            },
             qrCodes: true,
             invoices: {
                include: {

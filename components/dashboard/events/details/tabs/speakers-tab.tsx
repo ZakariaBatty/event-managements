@@ -16,6 +16,7 @@ interface SpeakersTabProps {
 }
 
 export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: SpeakersTabProps) {
+
   const [searchTerm, setSearchTerm] = useState("")
 
   const filteredSpeakers = speakers.filter(
@@ -27,7 +28,7 @@ export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: Speaker
   if (!speakers || speakers.length === 0) {
     return (
       <Card>
-        <CardHeader className="flex justify-between items-center">
+        <CardHeader className="flex !flex-row justify-between items-center">
           <div>
             <CardTitle>Event Speakers</CardTitle>
             <CardDescription>Manage speakers and presenters</CardDescription>
@@ -41,12 +42,6 @@ export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: Speaker
           <EmptyState
             title="No speakers found"
             description="There are no speakers for this event yet. Add your first speaker to get started."
-            action={
-              <Button onClick={() => onOpenSlideOver("addSpeaker")}>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add Speaker
-              </Button>
-            }
           />
         </CardContent>
       </Card>
@@ -55,7 +50,7 @@ export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: Speaker
 
   return (
     <Card>
-      <CardHeader className="flex justify-between items-center">
+      <CardHeader className="flex !flex-row justify-between items-center">
         <div>
           <CardTitle>Event Speakers</CardTitle>
           <CardDescription>Manage speakers and presenters</CardDescription>
@@ -112,8 +107,8 @@ export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: Speaker
                     </TableCell>
                     <TableCell>{speaker.organization || "Not specified"}</TableCell>
                     <TableCell>
-                      {speaker.sessions
-                        ? `${speaker.sessions.length} session${speaker.sessions.length !== 1 ? "s" : ""}`
+                      {speaker?._count.sideEventItem
+                        ? `${speaker._count.sideEventItem} session${speaker._count.sideEventItems > 1 ? "s" : ""}`
                         : "0 sessions"}
                     </TableCell>
                     <TableCell className="text-right">

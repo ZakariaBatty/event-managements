@@ -27,7 +27,7 @@ export function PartnersTab({ partners, onOpenSlideOver, onDeleteItem }: Partner
   if (!partners || partners.length === 0) {
     return (
       <Card>
-        <CardHeader className="flex justify-between items-center">
+        <CardHeader className="flex !flex-row justify-between items-center">
           <div>
             <CardTitle>Event Partners</CardTitle>
             <CardDescription>Manage sponsors and partners</CardDescription>
@@ -55,7 +55,7 @@ export function PartnersTab({ partners, onOpenSlideOver, onDeleteItem }: Partner
 
   return (
     <Card>
-      <CardHeader className="flex justify-between items-center">
+      <CardHeader className="flex !flex-row justify-between items-center">
         <div>
           <CardTitle>Event Partners</CardTitle>
           <CardDescription>Manage sponsors and partners</CardDescription>

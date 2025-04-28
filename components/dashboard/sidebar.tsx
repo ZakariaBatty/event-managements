@@ -198,7 +198,7 @@ export function DashboardSidebar({ className }: SidebarProps) {
 
                 <NavItem
                   icon={<Building className={cn("mr-2 h-5 w-5 text-icon-orange", isCollapsed && "mr-0")} />}
-                  label="Clients"
+                  label="Contacts"
                   path="/dashboard/clients"
                 />
 

@@ -15,9 +15,6 @@ interface ProgramTabProps {
 
 export function ProgramTab({ sessions, onOpenSlideOver, onDeleteItem, onAddSessionFromProgram }: ProgramTabProps) {
 
-  console.log(sessions);
-
-
   const handleSpeakerClick = (speaker: any) => {
     console.log("Speaker clicked:", speaker)
   }
