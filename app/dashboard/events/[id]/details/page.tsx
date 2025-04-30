@@ -49,7 +49,6 @@ export default function EventDetailPage() {
   }
 
   const handleFormSubmit = (data: any) => {
-    console.log("Form submitted:", data)
 
     if (slideOverContent === "addSession") {
       const newSession = {

@@ -23,6 +23,9 @@ interface SessionFormProps {
 }
 
 export function SessionForm({ session, mode, onSubmit, onCancel }: SessionFormProps) {
+
+  console.log()
+
   const [formData, setFormData] = useState({
     title: "",
     date: null as Date | null,
@@ -125,7 +128,7 @@ export function SessionForm({ session, mode, onSubmit, onCancel }: SessionFormPr
               <Calendar
                 mode="single"
                 selected={formData.date || undefined}
-                onSelect={(date) => setFormData({ ...formData, date })}
+                onSelect={(date) => setFormData({ ...formData, date: date || null })}
                 initialFocus
               />
             </PopoverContent>

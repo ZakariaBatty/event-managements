@@ -188,7 +188,6 @@ export function SlideOverContent({
           <EventForm
             event={event}
             mode="edit"
-            onSubmit={() => onFormSubmit(event)}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}

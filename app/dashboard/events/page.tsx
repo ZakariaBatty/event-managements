@@ -9,7 +9,7 @@ export default async function EventsPage({ searchParams }: { searchParams: { pag
 
   const { data: events, meta } = await eventService.getEvents(page, limit)
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="mx-auto py-8">
       <h1 className="text-2xl font-bold mb-6">Events</h1>
 
       <Suspense fallback={<div>Loading events...</div>}>

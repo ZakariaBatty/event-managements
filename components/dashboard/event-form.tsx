@@ -16,16 +16,18 @@ import { cn } from "@/lib/utils"
 interface EventFormProps {
   event?: any
   mode: "create" | "edit" | "view"
-  onSubmit: () => void
   onCancel: () => void
 }
 
-export function EventForm({ event, mode, onSubmit, onCancel }: EventFormProps) {
+export function EventForm({ event, mode, onCancel }: EventFormProps) {
+  const [themes, setThemes] = useState<string[]>([])
+  const [organizers, setOrganizers] = useState<string[]>([])
+
   const [formData, setFormData] = useState({
-    name: "",
-    slug: "",
+    title: "",
     description: "",
     location: "",
+    goals: "",
     startDate: null as Date | null,
     endDate: null as Date | null,
   })
@@ -37,33 +39,31 @@ export function EventForm({ event, mode, onSubmit, onCancel }: EventFormProps) {
       const endDate = event.endDate ? new Date(event.endDate) : null
 
       setFormData({
-        name: event.name || "",
-        slug: event.slug || "",
+        title: event.title || "",
         description: event.description || "",
         location: event.location || "",
         startDate,
         endDate,
+        goals: event.goals
       })
+      setThemes(event.themes || [""])
+      setOrganizers(event.organizers || [""])
     }
   }, [event, mode])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+    const { title, value } = e.target
 
-    if (name === "name" && mode !== "view") {
-      // Auto-generate slug from name
+    if (title === "title" && mode !== "view") {
+      // Auto-generate slug from title
       setFormData({
         ...formData,
-        name: value,
-        slug: value
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, ""),
+        title: value,
       })
     } else {
       setFormData({
         ...formData,
-        [name]: value,
+        [title]: value,
       })
     }
   }
@@ -72,7 +72,36 @@ export function EventForm({ event, mode, onSubmit, onCancel }: EventFormProps) {
     e.preventDefault()
     // In a real app, you would call an API to save the event
     console.log("Form data to save:", formData)
-    onSubmit()
+  }
+
+  const handleAddThemes = () => setThemes([...themes, ""])
+
+
+  const handleThemesChange = (index: number, value: string) => {
+    const updated = [...themes]
+    updated[index] = value
+    setThemes(updated)
+  }
+
+  const handleRemoveThemes = (index: number) => {
+    if (themes.length > 1) {
+      setThemes(themes.filter((_, i) => i !== index))
+    }
+  }
+
+  const handleAddOrganizers = () => setOrganizers([...organizers, ""])
+
+
+  const handleOrganizersChange = (index: number, value: string) => {
+    const updated = [...organizers]
+    updated[index] = value
+    setOrganizers(updated)
+  }
+
+  const handleRemoveOrganizers = (index: number) => {
+    if (organizers.length > 1) {
+      setOrganizers(organizers.filter((_, i) => i !== index))
+    }
   }
 
   const isReadOnly = mode === "view"
@@ -80,34 +109,17 @@ export function EventForm({ event, mode, onSubmit, onCancel }: EventFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="name">Event Name</Label>
+        <Label htmlFor="title">Event Name</Label>
         <Input
-          id="name"
-          name="name"
-          value={formData.name}
+          id="title"
+          title="title"
+          value={formData.title}
           onChange={handleChange}
-          placeholder="Enter event name"
+          placeholder="Enter event title"
           required
           readOnly={isReadOnly}
           className={isReadOnly ? "bg-gray-50" : ""}
         />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="slug">URL Slug</Label>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">yourdomain.com/events/</span>
-          <Input
-            id="slug"
-            name="slug"
-            value={formData.slug}
-            onChange={handleChange}
-            placeholder="event-name"
-            required
-            readOnly={isReadOnly}
-            className={isReadOnly ? "bg-gray-50" : ""}
-          />
-        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -174,7 +186,7 @@ export function EventForm({ event, mode, onSubmit, onCancel }: EventFormProps) {
         <Label htmlFor="location">Location</Label>
         <Input
           id="location"
-          name="location"
+          title="location"
           value={formData.location}
           onChange={handleChange}
           placeholder="Event location"
@@ -188,7 +200,7 @@ export function EventForm({ event, mode, onSubmit, onCancel }: EventFormProps) {
         <Label htmlFor="description">Event Description</Label>
         <Textarea
           id="description"
-          name="description"
+          title="description"
           value={formData.description}
           onChange={handleChange}
           placeholder="Describe your event"
@@ -197,6 +209,65 @@ export function EventForm({ event, mode, onSubmit, onCancel }: EventFormProps) {
           readOnly={isReadOnly}
           className={isReadOnly ? "bg-gray-50" : ""}
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-right">Organizers</Label>
+        <div className="space-y-2">
+          {organizers.map((Organizer, index) => (
+            <div key={index} className="flex gap-2">
+              <Input
+                value={Organizer}
+                onChange={(e) => handleOrganizersChange(index, e.target.value)}
+                placeholder={`Organizer ${index + 1}`}
+              />
+              {organizers.length > 1 && (
+                <Button type="button" variant="destructive" size="sm" onClick={() => handleRemoveOrganizers(index)}>Delete</Button>
+              )}
+            </div>
+          ))}
+          <Button type="button" onClick={handleAddOrganizers} variant="outline" size="sm">
+            + Add Organizers
+          </Button>
+        </div>
+      </div>
+
+
+      <div className="space-y-2">
+        <Label htmlFor="goals">Goals</Label>
+        <Textarea
+          id="goals"
+          title="goals"
+          value={formData.goals}
+          onChange={handleChange}
+          placeholder="Describe your event"
+          rows={3}
+          required
+          readOnly={isReadOnly}
+          className={isReadOnly ? "bg-gray-50" : ""}
+        />
+      </div>
+
+
+      <div className="space-y-2">
+        <Label className="text-right">Themes</Label>
+        <div className="space-y-2">
+          {themes.map((theme, index) => (
+            <div key={index} className="flex gap-2">
+              <Input
+                value={theme}
+                onChange={(e) => handleThemesChange(index, e.target.value)}
+                placeholder={`Themes ${index + 1}`}
+              />
+              {theme.length > 1 && (
+                <Button type="button" variant="destructive" size="sm" onClick={() => handleRemoveThemes(index)}>Delete</Button>
+              )}
+            </div>
+          ))}
+          <Button type="button" onClick={handleAddThemes} variant="outline" size="sm">
+            + Add Themes
+          </Button>
+        </div>
       </div>
 
       <div className="flex justify-end gap-2 pt-4">
