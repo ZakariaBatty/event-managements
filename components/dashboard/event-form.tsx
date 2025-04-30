@@ -44,7 +44,7 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
         location: event.location || "",
         startDate,
         endDate,
-        goals: event.goals
+        goals: event.goals,
       })
       setThemes(event.themes || [""])
       setOrganizers(event.organizers || [""])
@@ -52,9 +52,9 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
   }, [event, mode])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { title, value } = e.target
+    const { name, value } = e.target
 
-    if (title === "title" && mode !== "view") {
+    if (name === "title" && mode !== "view") {
       // Auto-generate slug from title
       setFormData({
         ...formData,
@@ -63,7 +63,7 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
     } else {
       setFormData({
         ...formData,
-        [title]: value,
+        [name]: value,
       })
     }
   }
@@ -71,11 +71,14 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // In a real app, you would call an API to save the event
-    console.log("Form data to save:", formData)
+    console.log("Form data to save:", {
+      ...formData,
+      themes,
+      organizers,
+    })
   }
 
   const handleAddThemes = () => setThemes([...themes, ""])
-
 
   const handleThemesChange = (index: number, value: string) => {
     const updated = [...themes]
@@ -90,7 +93,6 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
   }
 
   const handleAddOrganizers = () => setOrganizers([...organizers, ""])
-
 
   const handleOrganizersChange = (index: number, value: string) => {
     const updated = [...organizers]
@@ -112,7 +114,7 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
         <Label htmlFor="title">Event Name</Label>
         <Input
           id="title"
-          title="title"
+          name="title"
           value={formData.title}
           onChange={handleChange}
           placeholder="Enter event title"
@@ -186,7 +188,7 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
         <Label htmlFor="location">Location</Label>
         <Input
           id="location"
-          title="location"
+          name="location"
           value={formData.location}
           onChange={handleChange}
           placeholder="Event location"
@@ -200,7 +202,7 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
         <Label htmlFor="description">Event Description</Label>
         <Textarea
           id="description"
-          title="description"
+          name="description"
           value={formData.description}
           onChange={handleChange}
           placeholder="Describe your event"
@@ -222,7 +224,9 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
                 placeholder={`Organizer ${index + 1}`}
               />
               {organizers.length > 1 && (
-                <Button type="button" variant="destructive" size="sm" onClick={() => handleRemoveOrganizers(index)}>Delete</Button>
+                <Button type="button" variant="destructive" size="sm" onClick={() => handleRemoveOrganizers(index)}>
+                  Delete
+                </Button>
               )}
             </div>
           ))}
@@ -232,22 +236,20 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
         </div>
       </div>
 
-
       <div className="space-y-2">
         <Label htmlFor="goals">Goals</Label>
         <Textarea
           id="goals"
-          title="goals"
+          name="goals"
           value={formData.goals}
           onChange={handleChange}
-          placeholder="Describe your event"
+          placeholder="Event goals"
           rows={3}
           required
           readOnly={isReadOnly}
           className={isReadOnly ? "bg-gray-50" : ""}
         />
       </div>
-
 
       <div className="space-y-2">
         <Label className="text-right">Themes</Label>
@@ -259,8 +261,10 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
                 onChange={(e) => handleThemesChange(index, e.target.value)}
                 placeholder={`Themes ${index + 1}`}
               />
-              {theme.length > 1 && (
-                <Button type="button" variant="destructive" size="sm" onClick={() => handleRemoveThemes(index)}>Delete</Button>
+              {themes.length > 1 && (
+                <Button type="button" variant="destructive" size="sm" onClick={() => handleRemoveThemes(index)}>
+                  Delete
+                </Button>
               )}
             </div>
           ))}
