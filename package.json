@@ -4,9 +4,11 @@
    "private": true,
    "scripts": {
       "dev": "next dev",
-      "build": "next build",
+      "build": "prisma generate && next build",
       "start": "next start",
       "lint": "next lint",
+      "dev:docker": "docker-compose -f docker-compose.dev.yml up --build",
+      "pro:docker": "docker-compose -f docker-compose.yml up --build",
       "prisma:generate": "prisma generate",
       "prisma:migrate": "prisma migrate dev",
       "prisma:studio": "prisma studio",

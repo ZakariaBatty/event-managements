@@ -130,8 +130,8 @@ jobs:
            with:
               zeit-token: ${{ secrets.VERCELTOKEN }}
               vercel-token: ${{ secrets.VERCELTOKEN }}
-              vercel-org-id: ${{ secrets.VERCEL_ORG_ID_DEV }}
-              vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_DEV }}
+              vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+              vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
               vercel-args: '--prod=false'
 
    deploy-main:
