@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
-import { getEventAction } from "@/lib/actions/event-actions"
+import { getEventAction, updateEvent } from "@/lib/actions/event-actions"
 import { EmptyState } from "@/components/ui/empty-state"
 import { LoadingState } from "@/components/ui/loading-state"
 import { EventHeader } from "@/components/dashboard/events/details/event-header"
@@ -13,8 +13,10 @@ import { EventDetails } from "@/components/dashboard/events/details/event-detail
 import { EventTabs } from "@/components/dashboard/events/details/event-tabs"
 import { programData } from "@/data/program"
 import { SlideOverContent } from "@/components/dashboard/events/details/slide-over-content"
+import { useToast } from "@/components/ui/use-toast"
 
 export default function EventDetailPage() {
+  const { toast } = useToast()
   const params = useParams()
   const router = useRouter()
   const eventId = params.id as string
@@ -39,108 +41,33 @@ export default function EventDetailPage() {
     getEvent()
   }, [eventId])
 
-  console.log(event);
-
-
   const openSlideOver = (content: string, item?: any) => {
     setSlideOverContent(content)
     setSelectedItem(item)
     setSlideOverOpen(true)
   }
 
-  const handleFormSubmit = (data: any) => {
-    console.log("Form submitted:", data)
+  const handleFormSubmit = async (data: any) => {
 
     if (slideOverContent === "addSession") {
-      const newSession = {
-        id: `s${event.sessions.length + 1}`,
-        ...data,
-      }
-      setEvent({
-        ...event,
-        sessions: [...event.sessions, newSession],
-        statistics: {
-          ...event.statistics,
-          sessions: event.statistics.sessions + 1,
-        },
-      })
     } else if (slideOverContent === "editSession" && selectedItem) {
-      const updatedSessions = event.sessions.map((session: any) =>
-        session.id === selectedItem.id ? { ...session, ...data } : session,
-      )
-      setEvent({
-        ...event,
-        sessions: updatedSessions,
-      })
     } else if (slideOverContent === "addSpeaker") {
-      const newSpeaker = {
-        id: `sp${event.speakers.length + 1}`,
-        ...data,
-      }
-      setEvent({
-        ...event,
-        speakers: [...event.speakers, newSpeaker],
-        statistics: {
-          ...event.statistics,
-          speakers: event.statistics.speakers + 1,
-        },
-      })
     } else if (slideOverContent === "editSpeaker" && selectedItem) {
-      const updatedSpeakers = event.speakers.map((speaker: any) =>
-        speaker.id === selectedItem.id ? { ...speaker, ...data } : speaker,
-      )
-      setEvent({
-        ...event,
-        speakers: updatedSpeakers,
-      })
     } else if (slideOverContent === "editLocation") {
-      setEvent({
-        ...event,
-        ...data,
-      })
     } else if (slideOverContent === "addPartner") {
-      const newPartner = {
-        id: `p${event.partners.length + 1}`,
-        ...data,
-      }
-      setEvent({
-        ...event,
-        partners: [...event.partners, newPartner],
-        statistics: {
-          ...event.statistics,
-          partners: event.statistics.partners + 1,
-        },
-      })
     } else if (slideOverContent === "editPartner" && selectedItem) {
-      const updatedPartners = event.partners.map((partner: any) =>
-        partner.id === selectedItem.id ? { ...partner, ...data } : partner,
-      )
-      setEvent({
-        ...event,
-        partners: updatedPartners,
-      })
     } else if (slideOverContent === "addQRCode") {
-      const newQRCode = {
-        id: `qr${event.qrCodes.length + 1}`,
-        ...data,
-      }
-      setEvent({
-        ...event,
-        qrCodes: [...event.qrCodes, newQRCode],
-      })
     } else if (slideOverContent === "editQRCode" && selectedItem) {
-      const updatedQRCodes = event.qrCodes.map((qrCode: any) =>
-        qrCode.id === selectedItem.id ? { ...qrCode, ...data } : qrCode,
-      )
-      setEvent({
-        ...event,
-        qrCodes: updatedQRCodes,
-      })
     } else if (slideOverContent === "editEvent") {
-      setEvent({
-        ...event,
-        ...data,
-      })
+      const result = await updateEvent(event.id, data)
+      if (result.success) {
+        setEvent(result.data)
+        toast({
+          variant: "default",
+          title: "Event updated!",
+          description: "Your Event has been successfully updated."
+        })
+      }
     }
 
     setSlideOverOpen(false)

@@ -11,7 +11,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: { pa
   const { data: clients, meta } = await clientService.getClients(page, limit)
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="mx-auto px-2 py-8">
       <h1 className="text-2xl font-bold mb-6">Clients</h1>
       <ClientsList clients={clients} pagination={meta} />
     </div>
