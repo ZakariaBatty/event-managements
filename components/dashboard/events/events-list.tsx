@@ -9,6 +9,9 @@ import { EventForm } from "@/components/dashboard/event-form"
 import { PlusCircle, Calendar, MapPin } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { calculateStatus, formatDateWithShortMonth } from "@/lib/utils"
+import { createEvent } from "@/lib/actions/event-actions"
+import { eventSchema } from "@/lib/validations"
+import { useToast } from "@/components/ui/use-toast"
 
 interface Event {
   id: string
@@ -40,6 +43,8 @@ interface EventsListProps {
 
 export default function EventsList({ events, pagination }: EventsListProps) {
   const router = useRouter()
+  const { toast } = useToast()
+
   const [slideOverOpen, setSlideOverOpen] = useState(false)
   const [slideOverMode, setSlideOverMode] = useState<"create" | "edit" | "view">("create")
   const [selectedEvent, setSelectedEvent] = useState<any>(null)
@@ -128,11 +133,25 @@ export default function EventsList({ events, pagination }: EventsListProps) {
     setSlideOverOpen(false)
   }
 
-  const handleFormSubmit = () => {
-    // In a real app, you would call an API to save the event
-    setSlideOverOpen(false)
-    alert(`Event would be ${slideOverMode === "create" ? "created" : "updated"} in a real app.`)
+  const handleFormSubmit = async (data: any) => {
+    const parsed = eventSchema.safeParse(data);
+
+    if (!parsed.success) {
+      console.error('Validation error:', parsed.error.flatten());
+      throw new Error('Invalid data format');
+    }
+    const result = await createEvent(data)
+    console.log("result", result)
+    if (result.success) {
+      toast({
+        variant: "default",
+        title: "Event created!",
+        description: "Your Event has been successfully create."
+      })
+    }
+    // setSlideOverOpen(false)
   }
+
 
   return (
     <div className="p-6 space-y-6 w-full">

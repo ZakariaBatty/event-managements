@@ -87,8 +87,8 @@ export const eventService = {
          status: event.status,
          description: event.description,
          organizers: event.organizers,
-         goals: event.Goals,
-         themes: event.Themes,
+         Goals: event.Goals,
+         Themes: event.Themes,
          startDate: event.startDate,
          endDate: event.endDate,
          location: event.location,
@@ -142,6 +142,7 @@ export const eventService = {
    },
 
    async createEvent(data: any) {
+      console.log('data', data);
       return eventRepository.create(data);
    },
 

@@ -16,18 +16,22 @@ import { cn } from "@/lib/utils"
 interface EventFormProps {
   event?: any
   mode: "create" | "edit" | "view"
+  onSubmit: (data: { title: string; description: string; location: string; Goals: string; startDate: Date | null; endDate: Date | null; Themes: string[]; organizers: string[] }) => void
   onCancel: () => void
+
 }
 
-export function EventForm({ event, mode, onCancel }: EventFormProps) {
-  const [themes, setThemes] = useState<string[]>([])
+export function EventForm({ event, mode, onSubmit, onCancel }: EventFormProps) {
+  const [Themes, setThemes] = useState<string[]>([])
   const [organizers, setOrganizers] = useState<string[]>([])
+  const [loading, setLoading] = useState(false)
+
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     location: "",
-    goals: "",
+    Goals: "",
     startDate: null as Date | null,
     endDate: null as Date | null,
   })
@@ -44,9 +48,9 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
         location: event.location || "",
         startDate,
         endDate,
-        goals: event.goals,
+        Goals: event.Goals,
       })
-      setThemes(event.themes || [""])
+      setThemes(event.Themes || [""])
       setOrganizers(event.organizers || [""])
     }
   }, [event, mode])
@@ -69,26 +73,23 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
   }
 
   const handleSubmit = (e: React.FormEvent) => {
+    setLoading(true)
     e.preventDefault()
-    // In a real app, you would call an API to save the event
-    console.log("Form data to save:", {
-      ...formData,
-      themes,
-      organizers,
-    })
+    onSubmit({ ...formData, Themes, organizers })
+    setLoading(false)
   }
 
-  const handleAddThemes = () => setThemes([...themes, ""])
+  const handleAddThemes = () => setThemes([...Themes, ""])
 
   const handleThemesChange = (index: number, value: string) => {
-    const updated = [...themes]
+    const updated = [...Themes]
     updated[index] = value
     setThemes(updated)
   }
 
   const handleRemoveThemes = (index: number) => {
-    if (themes.length > 1) {
-      setThemes(themes.filter((_, i) => i !== index))
+    if (Themes.length > 1) {
+      setThemes(Themes.filter((_, i) => i !== index))
     }
   }
 
@@ -239,9 +240,9 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
       <div className="space-y-2">
         <Label htmlFor="goals">Goals</Label>
         <Textarea
-          id="goals"
-          name="goals"
-          value={formData.goals}
+          id="Goals"
+          name="Goals"
+          value={formData.Goals}
           onChange={handleChange}
           placeholder="Event goals"
           rows={3}
@@ -254,14 +255,14 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
       <div className="space-y-2">
         <Label className="text-right">Themes</Label>
         <div className="space-y-2">
-          {themes.map((theme, index) => (
+          {Themes.map((theme, index) => (
             <div key={index} className="flex gap-2">
               <Input
                 value={theme}
                 onChange={(e) => handleThemesChange(index, e.target.value)}
                 placeholder={`Themes ${index + 1}`}
               />
-              {themes.length > 1 && (
+              {Themes.length > 1 && (
                 <Button type="button" variant="destructive" size="sm" onClick={() => handleRemoveThemes(index)}>
                   Delete
                 </Button>
@@ -280,7 +281,7 @@ export function EventForm({ event, mode, onCancel }: EventFormProps) {
         </Button>
         {!isReadOnly && (
           <Button type="submit" className="bg-primary hover:bg-primary-light">
-            {mode === "create" ? "Create Event" : "Save Changes"}
+            {loading ? "loading..." : mode === "create" ? "Create Event" : "Save Changes"}
           </Button>
         )}
       </div>
