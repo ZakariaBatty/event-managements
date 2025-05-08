@@ -1,0 +1,45 @@
+name: Create Pull Request from Develop to Main
+
+on:
+   workflow_run:
+      workflows: ['CI/CD Pipeline'] # The name of your CI/CD workflow
+      types:
+         - completed # Trigger after CI/CD workflow finishes
+
+jobs:
+   create-pull-request:
+      if: ${{ github.event.workflow_run.conclusion == 'success' }} # Only create PR if CI/CD is successful
+      runs-on: ubuntu-latest
+      steps:
+         - name: Checkout repository
+           uses: actions/checkout@v4
+
+         - name: Set up Git configuration
+           run: |
+              git config --global user.email "action@github.com"
+              git config --global user.name "GitHub Action"
+
+         - name: Check if PR already exists
+           run: |
+              pr_exists=$(gh pr list --state open --base main --head develop --json number -q ".[].number")
+              if [ -z "$pr_exists" ]; then
+                echo "No existing PR found, creating a new one."
+                exit 0
+              else
+                echo "PR already exists. Skipping creation."
+                exit 1
+              fi
+
+         - name: Create pull request
+           if: success() # This ensures the PR is only created if the previous step succeeded (no existing PR)
+           uses: devops-infra/action-pull-request@v0.5.3
+           with:
+              github_token: ${{ secrets.GITHUB_TOKEN }}
+              source_branch: develop
+              target_branch: main
+              title: 'Auto PR: Merge develop into main'
+              body: |
+                 This pull request was automatically created after successful CI/CD run on the develop branch.
+                 Please review and merge manually.
+              draft: false # Set to false to make it ready for review and merging
+              allow_no_diff: false # Will create PR even if there are no changes

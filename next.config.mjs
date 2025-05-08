@@ -4,7 +4,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   reactStrictMode: true,
-  output: "standalone",
+  // output: "standalone",
   serverExternalPackages: ["bcrypt"],
   eslint: {
     ignoreDuringBuilds: true,
