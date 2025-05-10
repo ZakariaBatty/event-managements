@@ -53,6 +53,7 @@ jobs:
            run: npm run build
            env:
               NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+              DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
    docker-build:
       name: Build Docker Image
@@ -114,7 +115,7 @@ jobs:
            if: steps.migrations.outputs.run_migrate == 'true'
            run: npx prisma migrate deploy
            env:
-              DATABASE_URL: ${{ secrets.DATABASE_URL_PROD }}
+              DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
    deploy-develop:
       name: Deploy (Develop)
