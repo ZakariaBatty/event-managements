@@ -2,36 +2,42 @@ name: Create Pull Request from Develop to Main
 
 on:
    workflow_run:
-      workflows: ['CI/CD Pipeline'] # The name of your CI/CD workflow
+      workflows: ['CI/CD Pipeline']
       types:
-         - completed # Trigger after CI/CD workflow finishes
+         - completed
 
 jobs:
    create-pull-request:
-      if: ${{ github.event.workflow_run.conclusion == 'success' }} # Only create PR if CI/CD is successful
+      if: ${{ github.event.workflow_run.conclusion == 'success' }}
       runs-on: ubuntu-latest
       steps:
-         - name: Checkout repository
+         - name: Checkout repo
            uses: actions/checkout@v4
 
-         - name: Set up Git configuration
+         - name: Install GitHub CLI
            run: |
-              git config --global user.email "action@github.com"
-              git config --global user.name "GitHub Action"
+              sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+              curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+              sudo apt-add-repository https://cli.github.com/packages
+              sudo apt update
+              sudo apt install gh -y
 
-         - name: Check if PR already exists
+         - name: Authenticate GitHub CLI
            run: |
-              pr_exists=$(gh pr list --state open --base main --head develop --json number -q ".[].number")
-              if [ -z "$pr_exists" ]; then
-                echo "No existing PR found, creating a new one."
-                exit 0
+              echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+         - name: Check if PR exists
+           id: check_pr
+           run: |
+              gh pr list --base main --head develop --json number -q ".[].number" > pr.json
+              if [ "$(cat pr.json)" = "" ]; then
+                echo "create_pr=true" >> $GITHUB_OUTPUT
               else
-                echo "PR already exists. Skipping creation."
-                exit 1
+                echo "create_pr=false" >> $GITHUB_OUTPUT
               fi
 
          - name: Create pull request
-           if: success() # This ensures the PR is only created if the previous step succeeded (no existing PR)
+           if: steps.check_pr.outputs.create_pr == 'true'
            uses: devops-infra/action-pull-request@v0.5.3
            with:
               github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -41,5 +47,5 @@ jobs:
               body: |
                  This pull request was automatically created after successful CI/CD run on the develop branch.
                  Please review and merge manually.
-              draft: false # Set to false to make it ready for review and merging
-              allow_no_diff: false # Will create PR even if there are no changes
+              draft: false
+              allow_no_diff: true
