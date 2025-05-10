@@ -14,11 +14,11 @@ interface InvoicePreviewProps {
 
 export function InvoicePreview({ invoice }: InvoicePreviewProps) {
   // Add null checks to prevent errors
+  const invoiceRef = useRef<HTMLDivElement>(null)
+
   if (!invoice) {
     return <div>No invoice data available</div>
   }
-
-  const invoiceRef = useRef<HTMLDivElement>(null)
 
   const handlePrint = () => {
     if (invoiceRef.current) {

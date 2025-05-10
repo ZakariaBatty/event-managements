@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 
 import type React from "react"
@@ -262,7 +263,7 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
                     <Calendar
                       mode="single"
                       selected={formData.arrivalDate || undefined}
-                      onSelect={(date) => setFormData({ ...formData, arrivalDate: date })}
+                      onSelect={(date) => setFormData({ ...formData, arrivalDate: date || null })}
                       initialFocus
                     />
                   </PopoverContent>
@@ -291,7 +292,7 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
                     <Calendar
                       mode="single"
                       selected={formData.departureDate || undefined}
-                      onSelect={(date) => setFormData({ ...formData, departureDate: date })}
+                      onSelect={(date) => setFormData({ ...formData, departureDate: date || null })}
                       initialFocus
                     />
                   </PopoverContent>

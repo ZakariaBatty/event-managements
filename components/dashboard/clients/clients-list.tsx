@@ -8,6 +8,7 @@ import { ClientForm } from "@/components/dashboard/client-form"
 import { PlusCircle, Mail, Phone, Building, PhoneCall } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 interface Client {
   id: string
@@ -54,7 +55,7 @@ export default function ClientsList({ clients, pagination }: ClientsListProps) {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
             {item.logo ? (
-              <img src={item.logo || "/placeholder.svg"} alt={value} className="w-full h-full object-cover" />
+              <Image src={item.logo || "/placeholder.svg"} alt={value} className="w-full h-full object-cover" width={40} height={40} />
             ) : (
               <Building className="h-5 w-5 text-gray-500" />
             )}
