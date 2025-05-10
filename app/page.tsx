@@ -122,7 +122,7 @@ export default function Home() {
 
   const cardItems = [
     {
-      title: "Programme",
+      title: "Programme up",
       description: "Consultez le programme complet de l'événement",
       icon: <Calendar className="w-8 h-8 text-blue-500" />,
       type: "program",
