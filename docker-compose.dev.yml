@@ -13,7 +13,7 @@ services:
          - /app/.next
       environment:
          - NODE_ENV=development
-           - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+         - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
       depends_on:
          - postgres
       command: npm run dev

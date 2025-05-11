@@ -103,7 +103,7 @@ jobs:
          - name: Check for new migrations
            id: migrations
            run: |
-              if git diff --quiet origin/develop HEAD -- prisma/migrations/; then
+              if git diff --quiet origin/main HEAD -- prisma/migrations/; then
                 echo "no new migrations"
                 echo "run_migrate=false" >> $GITHUB_OUTPUT
               else
@@ -148,5 +148,5 @@ jobs:
               zeit-token: ${{ secrets.VERCELTOKEN }}
               vercel-token: ${{ secrets.VERCELTOKEN }}
               vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-              vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+              vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_PROD }}
               vercel-args: '--prod'
