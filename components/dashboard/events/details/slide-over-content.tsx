@@ -136,7 +136,7 @@ export function SlideOverContent({
           <SessionForm
             session={selectedItem}
             mode="edit"
-            onSubmit={onFormSubmit}
+            onSubmit={() => onFormSubmit({})}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}
@@ -149,7 +149,7 @@ export function SlideOverContent({
           <SpeakerForm
             speaker={selectedItem}
             mode="edit"
-            onSubmit={onFormSubmit}
+            onSubmit={() => onFormSubmit({})}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}
@@ -166,7 +166,7 @@ export function SlideOverContent({
           <PartnerForm
             partner={selectedItem}
             mode="edit"
-            onSubmit={onFormSubmit}
+            onSubmit={() => onFormSubmit({})}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}
@@ -179,7 +179,7 @@ export function SlideOverContent({
           <QRCodeForm
             qrCode={selectedItem}
             mode="edit"
-            onSubmit={onFormSubmit}
+            onSubmit={() => onFormSubmit({})}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}
@@ -188,7 +188,7 @@ export function SlideOverContent({
           <EventForm
             event={event}
             mode="edit"
-            onSubmit={() => onFormSubmit(event)}
+            onSubmit={(data) => onFormSubmit(data)}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}

@@ -73,13 +73,13 @@ export function EventDetails({ event }: EventDetailsProps) {
 
           <h3 className="text-sm font-medium text-gray-500">Goals</h3>
           <p className="mt-1">
-            {event.goals ? event.goals : "No goals set"}
+            {event.Goals ? event.Goals : "No goals set"}
           </p>
 
           <h3 className="text-sm font-medium text-gray-500">Themes</h3>
-          {event.themes.length > 0 ? (
+          {event.Themes.length > 0 ? (
             <ul className="list-disc pl-5 space-y-1">
-              {event.themes.map((theme: any, index: number) => (
+              {event.Themes.map((theme: any, index: number) => (
                 <li key={index} className="mt-1">
                   {theme}
                 </li>
