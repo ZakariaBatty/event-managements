@@ -18,13 +18,12 @@ interface EventFormProps {
   mode: "create" | "edit" | "view"
   onSubmit: (data: { title: string; description: string; location: string; Goals: string; startDate: Date | null; endDate: Date | null; Themes: string[]; organizers: string[] }) => void
   onCancel: () => void
-
+  loading?: boolean
 }
 
-export function EventForm({ event, mode, onSubmit, onCancel }: EventFormProps) {
+export function EventForm({ event, mode, onSubmit, onCancel, loading }: EventFormProps) {
   const [Themes, setThemes] = useState<string[]>([])
   const [organizers, setOrganizers] = useState<string[]>([])
-  const [loading, setLoading] = useState(false)
 
 
   const [formData, setFormData] = useState({
@@ -73,10 +72,8 @@ export function EventForm({ event, mode, onSubmit, onCancel }: EventFormProps) {
   }
 
   const handleSubmit = (e: React.FormEvent) => {
-    setLoading(true)
     e.preventDefault()
     onSubmit({ ...formData, Themes, organizers })
-    setLoading(false)
   }
 
   const handleAddThemes = () => setThemes([...Themes, ""])
