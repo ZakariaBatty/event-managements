@@ -49,7 +49,7 @@ model Event {
   location    String?
   logo        String?
   coverImage  String?
-  status      EventStatus @default(DRAFT)
+  status      EventStatus @default(PUBLISHED)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 

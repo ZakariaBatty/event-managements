@@ -155,15 +155,15 @@ export default function EventsList({ events, pagination }: EventsListProps) {
         })
       }
     } else {
-      console.log("Create event:", validatedData)
-      // const result = await createEvent(validatedData)
-      // if (result.success) {
-      //   toast({
-      //     variant: "default",
-      //     title: "Event created!",
-      //     description: "Your Event has been successfully create."
-      //   })
-      // }
+      const result = await createEvent(validatedData)
+      console.log("Create event:", result)
+      if (result.success) {
+        toast({
+          variant: "default",
+          title: "Event created!",
+          description: "Your Event has been successfully create."
+        })
+      }
     }
     setLoading(false)
     setSlideOverOpen(false)

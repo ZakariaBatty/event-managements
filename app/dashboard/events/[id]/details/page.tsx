@@ -30,6 +30,7 @@ export default function EventDetailPage() {
     const getEvent = async () => {
       try {
         const eventData = await getEventAction(eventId)
+        console.log("Event data:", eventData)
         setEvent(eventData)
       } catch (error) {
         console.error("Failed to fetch event:", error)

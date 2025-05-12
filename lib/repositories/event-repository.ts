@@ -1,8 +1,7 @@
 import prisma from '@/lib/db';
 import { createRepository } from './base-repository';
-import type { Event } from '@prisma/client';
 // Create base repository functions
-const baseRepository = createRepository<Event>(prisma.event);
+const baseRepository = createRepository(prisma.event);
 
 // Extended event repository with custom functions
 export const eventRepository = {
@@ -41,7 +40,7 @@ export const eventRepository = {
             },
             contacts: {
                where: {
-                  type: { in: ['CLIENT', 'INVITE', 'PARTNER'] },
+                  type: { in: ['INVITE'] },
                },
                include: {
                   country: true,
