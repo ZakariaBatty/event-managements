@@ -30,7 +30,7 @@ jobs:
          - name: Run Migrations
            run: npx prisma migrate deploy
            env:
-              DATABASE_URL: ${{ secrets.DATABASE_URL_PROD }}
+              DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
          - name: ✅ Migrations Applied Successfully
            run: echo "Database schema is up to date!"
