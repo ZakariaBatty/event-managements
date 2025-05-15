@@ -46,8 +46,8 @@ export async function updateEvent(id: string, data: any) {
    try {
       const event = await eventService.updateEvent(id, validatedData);
 
-      revalidatePath('/dashboard/events');
       revalidatePath(`/dashboard/events/${id}/details`);
+      revalidatePath('/dashboard/events');
 
       return { success: true, message: 'Event updated', data: event };
    } catch (error) {
