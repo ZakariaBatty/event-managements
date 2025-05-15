@@ -6,6 +6,7 @@ interface EventDetailsProps {
 }
 
 export function EventDetails({ event }: EventDetailsProps) {
+
   if (!event) {
     return (
       <Card>
@@ -64,11 +65,13 @@ export function EventDetails({ event }: EventDetailsProps) {
 
           <h3 className="text-sm font-medium text-gray-500">Organizers</h3>
           <ul className="list-disc pl-5 space-y-1">
-            {event.organizers.map((org: string, index: number) => (
+            {event.organizers && event.organizers.length > 0 ? event.organizers.map((org: string, index: number) => (
               <li key={index} className="mt-1">
                 {org}
               </li>
-            ))}
+            )) : (
+              <p className="mt-1">No organizers set</p>
+            )}
           </ul>
 
           <h3 className="text-sm font-medium text-gray-500">Goals</h3>
@@ -77,17 +80,17 @@ export function EventDetails({ event }: EventDetailsProps) {
           </p>
 
           <h3 className="text-sm font-medium text-gray-500">Themes</h3>
-          {event.Themes.length > 0 ? (
-            <ul className="list-disc pl-5 space-y-1">
-              {event.Themes.map((theme: any, index: number) => (
+          <ul className="list-disc pl-5 space-y-1">
+            {event.Themes && event.Themes.length > 0 ?
+              event.Themes.map((theme: any, index: number) => (
                 <li key={index} className="mt-1">
                   {theme}
                 </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-1">No themes set</p>
-          )}
+              )
+              ) : (
+                <p className="mt-1">No themes set</p>
+              )}
+          </ul>
         </div>
       </CardContent>
     </Card>

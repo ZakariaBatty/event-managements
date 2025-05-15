@@ -1,8 +1,8 @@
 import prisma from '@/lib/db';
 import { createRepository } from './base-repository';
-import type { Event } from '@prisma/client';
+import { endOfDay, startOfDay } from 'date-fns';
 // Create base repository functions
-const baseRepository = createRepository<Event>(prisma.event);
+const baseRepository = createRepository(prisma.event);
 
 // Extended event repository with custom functions
 export const eventRepository = {
@@ -41,7 +41,7 @@ export const eventRepository = {
             },
             contacts: {
                where: {
-                  type: { in: ['CLIENT', 'INVITE', 'PARTNER'] },
+                  type: { in: ['INVITE'] },
                },
                include: {
                   country: true,
@@ -76,7 +76,20 @@ export const eventRepository = {
       return await prisma.event.findMany({
          where: {
             startDate: {
-               gte: now,
+               gte: now, // >= now
+            },
+            // endDate: {
+            //    lte: now, // <= now
+            // },
+            status: {
+               in: ['ACTIVE', 'UPCOMING'],
+            },
+            contacts: {
+               some: {
+                  type: {
+                     in: ['INVITE'],
+                  },
+               },
             },
          },
          include: {

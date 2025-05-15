@@ -21,9 +21,11 @@ export async function createEvent(data: any) {
    }
 
    const validatedData: EventInput = parsed.data;
-   console.log('validatedData', validatedData);
    try {
-      await eventService.createEvent(validatedData);
+      await eventService.createEvent({
+         ...validatedData,
+         organisationId: 'cm9wl2gcm000vvg4g4zmxh8ik',
+      });
       revalidatePath('/dashboard/events');
       return { success: true };
    } catch (error) {
@@ -44,8 +46,8 @@ export async function updateEvent(id: string, data: any) {
    try {
       const event = await eventService.updateEvent(id, validatedData);
 
-      revalidatePath('/dashboard/events');
       revalidatePath(`/dashboard/events/${id}/details`);
+      revalidatePath('/dashboard/events');
 
       return { success: true, message: 'Event updated', data: event };
    } catch (error) {

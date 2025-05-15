@@ -33,8 +33,6 @@ export default async function DashboardPage() {
   ])
 
 
-  console.log(invoicesResult);
-
   const totalEvents = eventsResult.meta?.total || 0
   const totalUsers = usersResult.meta?.total || 0
   const totalClients = clientResult.meta?.total || 0

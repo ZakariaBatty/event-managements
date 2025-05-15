@@ -11,7 +11,7 @@ export const eventService = {
             skip,
             take: limit,
             orderBy: {
-               startDate: 'desc',
+               startDate: 'asc',
             },
          }),
          eventRepository.count(),
@@ -69,8 +69,8 @@ export const eventService = {
          PARTNER: 0,
       };
 
-      const partners = event.contacts.filter((c: any) => c.type === 'PARTNER');
-      const sponsors = event.contacts.filter((c: any) => c.type === 'SPONSOR');
+      // const partners = event.contacts.filter((c: any) => c.type === 'PARTNER');
+      // const sponsors = event.contacts.filter((c: any) => c.type === 'SPONSOR');
       const invites = event.contacts.filter((c: any) => c.type === 'INVITE');
 
       event.contacts.forEach((c: any) => {
@@ -94,8 +94,8 @@ export const eventService = {
          location: event.location,
          qrCodes: event.qrCodes,
          invoices: event.invoices,
-         partners,
-         sponsors,
+         // partners,
+         // sponsors,
          invites,
          sessions: event.sideEventItem,
          speakers: event.speakers,
@@ -142,7 +142,6 @@ export const eventService = {
    },
 
    async createEvent(data: any) {
-      console.log('data', data);
       return eventRepository.create(data);
    },
 

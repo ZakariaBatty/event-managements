@@ -6,9 +6,9 @@ services:
          context: .
          dockerfile: Dockerfile
          args:
+            - DATABASE_URL=${DATABASE_URL}
             - NEXTAUTH_URL=${NEXTAUTH_URL}
             - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-            - DATABASE_URL=${DATABASE_URL_PROD}
 
       ports:
          - '3000:3000'
@@ -16,6 +16,7 @@ services:
       depends_on:
          - postgres
       environment:
+         - DATABASE_URL=${DATABASE_URL}
          - NEXTAUTH_URL=${NEXTAUTH_URL}
          - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       networks:
@@ -26,9 +27,9 @@ services:
       ports:
          - '5432:5432'
       environment:
+         - POSTGRES_DB=${POSTGRES_DB_PROD}
          - POSTGRES_USER=${POSTGRES_USER_PROD}
          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_PROD}
-         - POSTGRES_DB=${POSTGRES_DB_PROD}
       volumes:
          - postgres-data:/var/lib/postgresql/data
       networks:
@@ -43,7 +44,7 @@ services:
       depends_on:
          - postgres
       environment:
-         - DATABASE_URL=${DATABASE_URL_PROD}
+         - DATABASE_URL=${DATABASE_URL}
          - SEED_DATABASE=${SEED_DATABASE:-false}
       networks:
          - app-network

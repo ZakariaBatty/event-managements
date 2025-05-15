@@ -13,6 +13,7 @@ model User {
   email           String        @unique
   emailVerified   DateTime?
   image           String?
+  codeVerification   String?
   password        String?
   number          String?
   role            Role          @default(USER)
@@ -49,16 +50,17 @@ model Event {
   location    String?
   logo        String?
   coverImage  String?
-  status      EventStatus @default(DRAFT)
+  status      EventStatus @default(ACTIVE)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   // Relations
+  countryId   String?      
+  country     Country?      @relation(fields: [countryId], references: [id])
   organisationId      String
   organisation        Organisation        @relation(fields: [organisationId], references: [id])
   speakers    Speaker[]
   sideEventItem    SideEventItem[]
-  locations   Location[]
   contacts    Contact[]
   qrCodes     QRCode[]
   invoices    Invoice[]
@@ -120,7 +122,6 @@ model Location {
   visibility  Boolean     @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  events      Event[]
 }
 
 
@@ -160,11 +161,11 @@ model Contact {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   eventId     String?
-  events       Event?        @relation(fields: [eventId], references: [id])
+  events      Event?        @relation(fields: [eventId], references: [id])
   invoices    Invoice[]
- 
- // Here: One-to-one with Country
-  countryId   String?       @unique
+
+ // Here: Many-to-one with Country
+  countryId   String?       
   country     Country?      @relation(fields: [countryId], references: [id])
 
 }
@@ -193,9 +194,11 @@ model Country {
   code      String          @unique
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
-    // Reverse relation (optional)
-  contacts    Contact?
+  // Reverse relation (optional)
+  contacts    Contact[]
+  events      Event[]
 }
+
 
 enum Role {
   USER
@@ -204,8 +207,8 @@ enum Role {
 }
 
 enum EventStatus {
-  DRAFT
-  PUBLISHED
+  UPCOMING
+  ACTIVE
   CANCELLED
   COMPLETED
 }

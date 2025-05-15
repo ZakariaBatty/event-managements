@@ -4,9 +4,9 @@ import { eventService } from "@/lib/services/event-service";
 import { Suspense } from "react";
 
 export default async function EventsPage({ searchParams }: { searchParams: { page?: string; limit?: string } }) {
-
-  const page = searchParams?.page ? Number.parseInt(searchParams?.page) : 1
-  const limit = searchParams?.limit ? Number.parseInt(searchParams?.limit) : 10
+  const param = await searchParams
+  const page = param?.page ? Number.parseInt(param?.page) : 1
+  const limit = param?.limit ? Number.parseInt(param?.limit) : 10
 
   const { data: events, meta } = await eventService.getEvents(page, limit)
   return (

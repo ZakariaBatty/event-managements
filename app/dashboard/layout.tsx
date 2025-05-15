@@ -12,7 +12,7 @@ export default function DashboardLayout({
     <ThemeProvider>
       <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
         <DashboardSidebar />
-        <div className="flex-1 p-4 md:p-8 min-h-screen overflow-x-hidden">
+        <div className="flex-1 p-4 min-h-screen overflow-x-hidden">
           {children}
           <Toaster />
         </div>

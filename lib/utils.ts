@@ -2,14 +2,9 @@ export function cn(...classes: (string | boolean | undefined)[]) {
    return classes.filter(Boolean).join(' ');
 }
 
-type Status = 'DRAFT' | 'PUBLISHED' | 'CANCELLED' | 'COMPLETED';
-type CalculatedStatus =
-   | 'upcoming'
-   | 'started'
-   | 'past'
-   | 'draft'
-   | 'cancelled'
-   | 'completed';
+type Status = 'UPCOMING' | 'ACTIVE' | 'CANCELLED' | 'COMPLETED';
+
+type CalculatedStatus = 'upcoming' | 'started' | 'cancelled' | 'completed';
 
 export function calculateStatus(
    startDate: string,
@@ -20,21 +15,22 @@ export function calculateStatus(
    const start = new Date(startDate);
    const end = new Date(endDate);
 
-   if (status === 'DRAFT') return 'draft';
    if (status === 'CANCELLED') return 'cancelled';
    if (status === 'COMPLETED') return 'completed';
 
-   if (status === 'PUBLISHED') {
-      if (now < start) {
-         return 'upcoming'; // باقي ماوصلش الوقت
-      } else if (now >= start && now <= end) {
-         return 'started'; // بين start و end
-      } else if (now > end) {
-         return 'past'; // دازت
+   if (status === 'UPCOMING') return 'upcoming';
+
+   if (status === 'ACTIVE') {
+      if (now >= start && now <= end) {
+         return 'started'; // now between start and end
+      } else if (now < start) {
+         return 'upcoming'; // bda status active mais mazal mabdach
+      } else {
+         return 'completed'; // active w sala waqt dialo
       }
    }
 
-   return 'draft'; // fallback default
+   return 'upcoming'; // fallback, for safety
 }
 
 // 1. Day/Month/Year

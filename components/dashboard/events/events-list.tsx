@@ -8,8 +8,8 @@ import { SlideOver } from "@/components/dashboard/slide-over"
 import { EventForm } from "@/components/dashboard/event-form"
 import { PlusCircle, Calendar, MapPin } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { calculateStatus, formatDateWithShortMonth } from "@/lib/utils"
-import { createEvent } from "@/lib/actions/event-actions"
+import { calculateStatus, cn, formatDateWithShortMonth } from "@/lib/utils"
+import { createEvent, updateEvent } from "@/lib/actions/event-actions"
 import { eventSchema } from "@/lib/validations"
 import { useToast } from "@/components/ui/use-toast"
 
@@ -43,6 +43,8 @@ interface EventsListProps {
 
 export default function EventsList({ events, pagination }: EventsListProps) {
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
+
   const { toast } = useToast()
 
   const [slideOverOpen, setSlideOverOpen] = useState(false)
@@ -83,24 +85,18 @@ export default function EventsList({ events, pagination }: EventsListProps) {
       key: "status",
       label: "Status",
       render: (value: string, item: any) => {
-        const formatingValue = calculateStatus(item.startDate, item.endDate, value as any)
+        const calculated = calculateStatus(item.startDate, item.endDate, value as any)
         return (
           <Badge
-            className={
-              formatingValue === "upcoming"
-                ? "bg-success/10 text-success hover:bg-success/20"
-                : formatingValue === "started"
-                  ? "bg-blue-100 text-blue-600 hover:bg-blue-200"
-                  : formatingValue === "past"
-                    ? "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                    : formatingValue === "draft"
-                      ? "bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
-                      : formatingValue === "cancelled"
-                        ? "bg-red-100 text-red-600 hover:bg-red-200"
-                        : "bg-green-100 text-green-600 hover:bg-green-200"
-            }
+            className={cn(
+              "hover:bg-opacity-100",
+              calculated === "upcoming" && "bg-blue-100 text-blue-800 hover:bg-blue-200",
+              calculated === "started" && "bg-yellow-100 text-yellow-800 hover:bg-yellow-200",
+              calculated === "cancelled" && "bg-red-100 text-red-800 hover:bg-red-200",
+              calculated === "completed" && "bg-green-100 text-green-800 hover:bg-green-200",
+            )}
           >
-            {formatingValue.charAt(0).toUpperCase() + formatingValue.slice(1)}
+            {calculated.charAt(0).toUpperCase() + calculated.slice(1)}
           </Badge>
         )
       },
@@ -134,22 +130,37 @@ export default function EventsList({ events, pagination }: EventsListProps) {
   }
 
   const handleFormSubmit = async (data: any) => {
+    setLoading(true)
     const parsed = eventSchema.safeParse(data);
 
     if (!parsed.success) {
       console.error('Validation error:', parsed.error.flatten());
       throw new Error('Invalid data format');
     }
-    const result = await createEvent(data)
-    console.log("result", result)
-    if (result.success) {
-      toast({
-        variant: "default",
-        title: "Event created!",
-        description: "Your Event has been successfully create."
-      })
+    const { data: validatedData } = parsed
+    if (slideOverMode === "edit") {
+      const result = await updateEvent(selectedEvent.id, validatedData)
+      console.log("Update event:", result)
+      if (result.success) {
+        toast({
+          variant: "default",
+          title: "Event updated!",
+          description: "Your Event has been successfully updated."
+        })
+      }
+    } else {
+      const result = await createEvent(validatedData)
+      console.log("Create event:", result)
+      if (result.success) {
+        toast({
+          variant: "default",
+          title: "Event created!",
+          description: "Your Event has been successfully create."
+        })
+      }
     }
-    // setSlideOverOpen(false)
+    setLoading(false)
+    setSlideOverOpen(false)
   }
 
 
@@ -174,7 +185,6 @@ export default function EventsList({ events, pagination }: EventsListProps) {
           columns={columns}
           onEdit={handleEditEvent}
           onDelete={handleDeleteEvent}
-          onView={handleViewEvent}
           pagination={pagination}
         />
       </div>
@@ -192,6 +202,7 @@ export default function EventsList({ events, pagination }: EventsListProps) {
           mode={slideOverMode}
           onSubmit={handleFormSubmit}
           onCancel={handleCloseSlideOver}
+          loading={loading}
         />
       </SlideOver>
     </div>
