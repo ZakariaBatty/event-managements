@@ -41,6 +41,10 @@ async function validateAndExecute<T extends z.ZodSchema, U>(
    }
 }
 
+export async function getSpeakersByEventId(id: string) {
+   return await speakerService.getSpeakersByEvent(id);
+}
+
 // Updated to accept a typed object directly
 export async function createSpeaker(data: SpeakerFormData) {
    return validateAndExecute(speakerSchema, data, async (validData) => {

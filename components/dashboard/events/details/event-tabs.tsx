@@ -17,12 +17,12 @@ export function EventTabs({ event, onOpenSlideOver, onDeleteItem, onAddSessionFr
 
   return (
     <Tabs defaultValue="program">
-      <TabsList className="grid w-full grid-cols-5">
-        <TabsTrigger value="program">Program</TabsTrigger>
-        <TabsTrigger value="speakers">Speakers</TabsTrigger>
-        <TabsTrigger value="location">Location</TabsTrigger>
-        <TabsTrigger value="partners">Partners</TabsTrigger>
-        <TabsTrigger value="qrcodes">QR Codes</TabsTrigger>
+      <TabsList className="grid w-full grid-cols-4">
+        <TabsTrigger value="speakers">(1) Speakers</TabsTrigger>
+        <TabsTrigger value="program">(2) Program</TabsTrigger>
+        <TabsTrigger value="location">(3) Location</TabsTrigger>
+        <TabsTrigger value="partners">(4) Partners</TabsTrigger>
+        {/* <TabsTrigger value="qrcodes">(5) QR Codes</TabsTrigger> */}
       </TabsList>
 
       <TabsContent value="program" className="space-y-4 pt-4">
@@ -42,9 +42,9 @@ export function EventTabs({ event, onOpenSlideOver, onDeleteItem, onAddSessionFr
         <LocationTab event={event} onOpenSlideOver={onOpenSlideOver} />
       </TabsContent>
 
-      <TabsContent value="partners" className="space-y-4 pt-4">
+      {/* <TabsContent value="partners" className="space-y-4 pt-4">
         <PartnersTab partners={event.partners || []} onOpenSlideOver={onOpenSlideOver} onDeleteItem={onDeleteItem} />
-      </TabsContent>
+      </TabsContent> */}
 
       <TabsContent value="qrcodes" className="space-y-4 pt-4">
         <QRCodesTab qrCodes={event.qrCodes || []} onOpenSlideOver={onOpenSlideOver} onDeleteItem={onDeleteItem} />

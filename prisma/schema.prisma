@@ -99,7 +99,7 @@ model SideEventItem {
   description String?
   date        DateTime
   time        String?
-  type        SessionType @default(MASTER_CLASS)
+  type        String @default("MASTER_CLASS")
   location    String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -215,14 +215,13 @@ enum EventStatus {
 
 enum SessionType {
   MASTER_CLASS
+  SIDE_EVENT
+  NETWORKING
+  SHOWCASE
+  ROUNDTABLE
   WORKSHOP
   KEYNOTE
   PANEL
-  NETWORKING
-
-  // SIDE_EVENT
-  // SHOWCASE
-  // ROUNDTABLE
 }
 
 enum PartnerType {

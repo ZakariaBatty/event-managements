@@ -13,10 +13,11 @@ import { EventDetails } from "@/components/dashboard/events/details/event-detail
 import { EventTabs } from "@/components/dashboard/events/details/event-tabs"
 import { programData } from "@/data/program"
 import { SlideOverContent } from "@/components/dashboard/events/details/slide-over-content"
-import { useToast } from "@/components/ui/use-toast"
+import { createSideEventItem, deleteSideEventItem, updateSideEventItem } from "@/lib/actions/programme-actions"
+import { toast } from "@/components/ui/use-toast"
+import { normalizeDateToISODateOnly } from "@/lib/utils"
 
 export default function EventDetailPage() {
-  const { toast } = useToast()
   const params = useParams()
   const router = useRouter()
   const eventId = params.id as string
@@ -50,7 +51,81 @@ export default function EventDetailPage() {
   const handleFormSubmit = async (data: any) => {
 
     if (slideOverContent === "addSession") {
+      // Create a new FormData object for the server action
+      const formData = new FormData()
+      formData.append("time", data.time)
+      formData.append("type", data.type)
+      formData.append("title", data.title)
+      formData.append("description", data.description)
+      formData.append("date", data.date instanceof Date ? normalizeDateToISODateOnly(data.date) : normalizeDateToISODateOnly(new Date(data.date)));
+      formData.append("eventId", eventId)
+      formData.append("speakers", Array.isArray(data.speakers) ? data.speakers.join(",") : "")
+      formData.append("location", data.location)
+      // Call the server action
+      const result = await createSideEventItem(formData)
+
+      if (result.success) {
+        // Update local state for immediate UI update
+        const newSession = {
+          id: result.data?.id || `s${event.sideEvents.length + 1}`,
+          ...data,
+        }
+        setEvent({
+          ...event,
+          sessions: [...event.sessions, newSession],
+          statistics: {
+            ...event.statistics,
+            sessions: event.statistics.sessions + 1,
+          },
+        })
+        toast({
+          title: "Success!",
+          description: "Session added successfully.",
+        })
+        setSlideOverOpen(false)
+      } else {
+        toast({
+          title: "Error!",
+          description: result.error || "Failed to add session.",
+          variant: "destructive",
+        })
+      }
     } else if (slideOverContent === "editSession" && selectedItem) {
+      // Create a new FormData object for the server action
+      const formData = new FormData()
+      formData.append("time", data.time)
+      formData.append("type", data.type)
+      formData.append("title", data.title)
+      formData.append("description", data.description)
+      formData.append("date", data.date instanceof Date ? normalizeDateToISODateOnly(data.date) : normalizeDateToISODateOnly(new Date(data.date)));
+      formData.append("speakers", Array.isArray(data.speakers) ? data.speakers : [])
+      formData.append("location", data.location)
+      // Call the server action
+      const result = await updateSideEventItem(selectedItem.id, formData)
+
+      if (result.success) {
+        // Update local state for immediate UI update
+        const updatedSessions = event.sessions.map((session: any) =>
+          session.id === selectedItem.id ? { ...session, ...data } : session,
+        )
+        setEvent({
+          ...event,
+          sessions: updatedSessions,
+        })
+        toast({
+          title: "Success!",
+          description: "Session updated successfully.",
+        })
+        setSlideOverOpen(false)
+      } else {
+        console.error("Failed to update session:", result.error)
+        toast({
+          title: "Error!",
+          description: result.error || "Failed to update session.",
+          variant: "destructive",
+        })
+      }
+      return
     } else if (slideOverContent === "addSpeaker") {
     } else if (slideOverContent === "editSpeaker" && selectedItem) {
     } else if (slideOverContent === "editLocation") {
@@ -73,43 +148,34 @@ export default function EventDetailPage() {
     setSlideOverOpen(false)
   }
 
-  const handleDeleteItem = (type: string, id: string) => {
+  const handleDeleteItem = async (type: string, id: string) => {
+    let result
     if (type === "session") {
-      const updatedSessions = event.sessions.filter((session: any) => session.id !== id)
-      setEvent({
-        ...event,
-        sessions: updatedSessions,
-        statistics: {
-          ...event.statistics,
-          sessions: event.statistics.sessions - 1,
-        },
-      })
+      result = await deleteSideEventItem(id)
+      if (result.success) {
+        const updatedSessions = event.sessions.filter((session: any) => session.id !== id)
+        setEvent({
+          ...event,
+          sessions: updatedSessions,
+          statistics: {
+            ...event.statistics,
+            sessions: event.statistics.sessions - 1,
+          },
+        })
+        toast({
+          title: "Success!",
+          description: "Session deleted successfully.",
+        })
+      } else {
+        toast({
+          title: "Error!",
+          description: result.error || "Failed to delete session.",
+          variant: "destructive",
+        })
+      }
     } else if (type === "speaker") {
-      const updatedSpeakers = event.speakers.filter((speaker: any) => speaker.id !== id)
-      setEvent({
-        ...event,
-        speakers: updatedSpeakers,
-        statistics: {
-          ...event.statistics,
-          speakers: event.statistics.speakers - 1,
-        },
-      })
     } else if (type === "partner") {
-      const updatedPartners = event.partners.filter((partner: any) => partner.id !== id)
-      setEvent({
-        ...event,
-        partners: updatedPartners,
-        statistics: {
-          ...event.statistics,
-          partners: event.statistics.partners - 1,
-        },
-      })
     } else if (type === "qrCode") {
-      const updatedQRCodes = event.qrCodes.filter((qrCode: any) => qrCode.id !== id)
-      setEvent({
-        ...event,
-        qrCodes: updatedQRCodes,
-      })
     }
   }
 

@@ -52,6 +52,10 @@ export const speakerService = {
       return speakerRepository.delete(id);
    },
 
+   async getSpeakersWithItemsByEvent(eventId: string) {
+      return speakerRepository.findSpeakersWithItemsByEvent(eventId);
+   },
+
    async getSpeakersByEvent(eventId: string) {
       return speakerRepository.findByEvent(eventId);
    },

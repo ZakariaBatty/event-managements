@@ -15,22 +15,30 @@ import { format } from "date-fns"
 import { CalendarIcon, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { programData } from "@/data/program"
+import { getSpeakersByEventId } from "@/lib/actions/speaker-actions"
+import { MultiSelect } from "../../../ui/multi-select"
+import { Speaker } from "@/lib/services/types"
+import { Spinner } from "../../../ui/spinner"
 
 interface SessionFormProps {
+  eventId: string
   session?: any
   mode: "create" | "edit"
   onSubmit: (data: any) => void
   onCancel: () => void
 }
 
-export function SessionForm({ session, mode, onSubmit, onCancel }: SessionFormProps) {
+export function SessionForm({ eventId, session, mode, onSubmit, onCancel }: SessionFormProps) {
 
-  console.log()
-
+  const [speakers, setSpeakers] = useState<Speaker[]>([])
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
     date: null as Date | null,
-    time: "",
+    time: {
+      start: "",
+      end: "",
+    },
     type: "MASTER_CLASS",
     description: "",
     speakers: [] as string[],
@@ -43,10 +51,26 @@ export function SessionForm({ session, mode, onSubmit, onCancel }: SessionFormPr
     { value: "NETWORKING", label: "Networking" },
     { value: "SHOWCASE", label: "Showcase" },
     { value: "ROUNDTABLE", label: "Roundtable" },
+    { value: "WORKSHOP", label: "Workshop" },
+    { value: "KEYNOTE", label: "Keynote" },
+    { value: "PANEL", label: "Panel" },
   ]
 
+
   useEffect(() => {
+    // Fetch speakers for the event
+    const getSpeakers = async () => {
+      const speakers = await getSpeakersByEventId(eventId)
+      setSpeakers(speakers)
+    }
+    getSpeakers()
+  }, [eventId])
+
+
+  useEffect(() => {
+    // Set form data based on session or default values
     if (session && mode === "edit") {
+
       setFormData({
         ...formData,
         title: session.title || "",
@@ -54,7 +78,7 @@ export function SessionForm({ session, mode, onSubmit, onCancel }: SessionFormPr
         time: session.time || "",
         type: session.type || "MASTER_CLASS",
         description: session.description || "",
-        speakers: session.speakers || [],
+        speakers: session.speakers.map((item: any) => item.id),
         location: session.location || "",
       })
     }
@@ -62,10 +86,7 @@ export function SessionForm({ session, mode, onSubmit, onCancel }: SessionFormPr
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setFormData({
-      ...formData,
-      [name]: value,
-    })
+    setFormData({ ...formData, [name]: value, })
   }
 
   const handleSelectChange = (name: string, value: string) => {
@@ -75,28 +96,33 @@ export function SessionForm({ session, mode, onSubmit, onCancel }: SessionFormPr
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
-  }
-
-  // Extract session types from program data
-  const getSessionTypesFromData = () => {
-    const types = new Set<string>()
-    programData.sideEvent.forEach((day) => {
-      day.items.forEach((item) => {
-        if (item.type) {
-          types.add(item.type)
-        }
-      })
+  // دير هاد الفنكشن لتعويض handleChange لوقت البداية و النهاية
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target; // name غتكون "start" أو "end"
+    setFormData({
+      ...formData,
+      time: {
+        ...formData.time,
+        [name]: value,
+      },
     })
-    return Array.from(types).map((type) => ({
-      value: type,
-      label: type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-    }))
   }
 
-  const sessionTypesFromData = getSessionTypesFromData()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      const formattedTime = `${formData.time.start} - ${formData.time.end}`
+      const dataToSend = {
+        ...formData,
+        time: formattedTime,
+      }
+      await onSubmit(dataToSend)
+    } finally {
+      setLoading(false)
+    }
+  }
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -136,19 +162,28 @@ export function SessionForm({ session, mode, onSubmit, onCancel }: SessionFormPr
           </Popover>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="time">Time</Label>
-          <div className="relative">
-            <Clock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-            <Input
-              id="time"
-              name="time"
-              value={formData.time}
-              onChange={handleChange}
-              placeholder="e.g. 14:00 - 16:00"
-              className="pl-9"
-              required
-            />
+        <div className="space-y-2 col-span-1">
+          <div className="relative flex flex-row gap-4 items-center">
+            <div className="space-y-2">
+              <Label>Start Time</Label>
+              <Input
+                type="time"
+                name="start"
+                value={formData.time.start}
+                onChange={handleTimeChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>End Time</Label>
+              <Input
+                type="time"
+                name="end"
+                value={formData.time.end}
+                onChange={handleTimeChange}
+                required
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -160,7 +195,7 @@ export function SessionForm({ session, mode, onSubmit, onCancel }: SessionFormPr
             <SelectValue placeholder="Select a type" />
           </SelectTrigger>
           <SelectContent>
-            {sessionTypesFromData.map((type) => (
+            {sessionTypes.map((type) => (
               <SelectItem key={type.value} value={type.value}>
                 {type.label}
               </SelectItem>
@@ -195,28 +230,24 @@ export function SessionForm({ session, mode, onSubmit, onCancel }: SessionFormPr
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="speakers">Speakers (comma separated)</Label>
-        <Input
-          id="speakers"
-          name="speakers"
-          value={formData.speakers.join(", ")}
-          onChange={(e) => {
-            const speakersList = e.target.value
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean)
-            setFormData({ ...formData, speakers: speakersList })
-          }}
-          placeholder="Enter speaker names separated by commas"
-        />
+        <Label htmlFor="speakers">Speakers</Label>
+        <div>
+          <MultiSelect
+            options={speakers.map((speaker) => ({ label: speaker.name, value: speaker.id }))}
+            selected={formData.speakers}
+            onChange={(selected) => setFormData({ ...formData, speakers: selected })}
+            placeholder="Select speakers"
+          />
+        </div>
       </div>
-
       <div className="flex justify-end gap-2 pt-4">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
         <Button type="submit" className="bg-primary hover:bg-primary-light">
-          {mode === "create" ? "Add Session" : "Save Changes"}
+          {loading ? <Spinner className="mr-2 h-4 w-4" /> : null}
+          {loading ? "Saving..." : mode === "create" ? "Add Session" : "Save Changes"}
+
         </Button>
       </div>
     </form>

@@ -4,7 +4,7 @@ import { SlideOver } from "@/components/dashboard/slide-over"
 import { Button } from "@/components/ui/button"
 import { Calendar, Edit, Clock } from "lucide-react"
 import Image from "next/image"
-import { SessionForm } from "@/components/dashboard/session-form"
+import { SessionForm } from "@/components/dashboard/events/details/session-form"
 import { SpeakerForm } from "@/components/dashboard/speaker-form"
 import { LocationForm } from "@/components/dashboard/location-form"
 import { PartnerForm } from "@/components/dashboard/partner-form"
@@ -129,14 +129,15 @@ export function SlideOverContent({
         )}
 
         {slideOverContent === "addSession" && (
-          <SessionForm mode="create" onSubmit={onFormSubmit} onCancel={() => setSlideOverOpen(false)} />
+          <SessionForm eventId={event.id} mode="create" onSubmit={onFormSubmit} onCancel={() => setSlideOverOpen(false)} />
         )}
 
         {slideOverContent === "editSession" && selectedItem && (
           <SessionForm
+            eventId={event.id}
             session={selectedItem}
             mode="edit"
-            onSubmit={() => onFormSubmit({})}
+            onSubmit={onFormSubmit}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}
@@ -149,7 +150,7 @@ export function SlideOverContent({
           <SpeakerForm
             speaker={selectedItem}
             mode="edit"
-            onSubmit={() => onFormSubmit({})}
+            onSubmit={onFormSubmit}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}
@@ -166,7 +167,7 @@ export function SlideOverContent({
           <PartnerForm
             partner={selectedItem}
             mode="edit"
-            onSubmit={() => onFormSubmit({})}
+            onSubmit={onFormSubmit}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}
@@ -179,7 +180,7 @@ export function SlideOverContent({
           <QRCodeForm
             qrCode={selectedItem}
             mode="edit"
-            onSubmit={() => onFormSubmit({})}
+            onSubmit={onFormSubmit}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}

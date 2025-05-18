@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { sessionSchema, type SessionFormData } from '../schemas';
 import { programmeService } from '../services/programme-service';
 import { revalidatePath } from 'next/cache';
+import { normalizeDateToISODateOnly } from '../utils';
 
 export async function createSideEventItem(
    formData: FormData | SessionFormData
@@ -15,7 +16,9 @@ export async function createSideEventItem(
          // Extract the values from the FormData object
          data = {
             title: formData.get('title') as string,
-            date: new Date(formData.get('date') as string),
+            date: new Date(
+               normalizeDateToISODateOnly(formData.get('date') as string)
+            ),
             time: formData.get('time') as string,
             type: formData.get('type') as string,
             description: (formData.get('description') as string) || '',

@@ -33,21 +33,20 @@ export function calculateStatus(
    return 'upcoming'; // fallback, for safety
 }
 
-// 1. Day/Month/Year
+// 1. DD/MM/YYYY
 export function formatDateNumeric(dateString: string): string {
    const date = new Date(dateString);
    const day = date.getDate().toString().padStart(2, '0');
-   const month = (date.getMonth() + 1).toString().padStart(2, '0'); // month 0-indexed
+   const month = (date.getMonth() + 1).toString().padStart(2, '0');
    const year = date.getFullYear();
    return `${day}/${month}/${year}`;
 }
 
-// 2. Day/MonthName/Year
+// 2. MonthName DD, YYYY
 export function formatDateWithShortMonth(dateString: string): string {
    const date = new Date(dateString);
-   const day = date.getDate(); // بلا padStart
+   const day = date.getDate();
    const year = date.getFullYear();
-
    const shortMonthNames = [
       'Jan',
       'Feb',
@@ -62,15 +61,18 @@ export function formatDateWithShortMonth(dateString: string): string {
       'Nov',
       'Dec',
    ];
-   const monthShort = shortMonthNames[date.getMonth()];
-
-   return `${monthShort} ${day}, ${year}`;
+   return `${shortMonthNames[date.getMonth()]} ${day}, ${year}`;
 }
 
-// 3. Only Time (HH:MM)
+// 3. HH:MM (24h)
 export function formatTime(dateString: string): string {
    const date = new Date(dateString);
    const hours = date.getHours().toString().padStart(2, '0');
    const minutes = date.getMinutes().toString().padStart(2, '0');
    return `${hours}:${minutes}`;
+}
+
+// 4. Normalize to ISO date only (YYYY-MM-DD)
+export function normalizeDateToISODateOnly(dateInput: string | Date): string {
+   return new Date(dateInput).toLocaleDateString('en-CA');
 }

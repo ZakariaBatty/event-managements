@@ -32,10 +32,7 @@ export function SessionSpeakers({ speakers, onSpeakerClick }: SessionSpeakersPro
             <Avatar className="h-9 w-9 border border-gray-100">
               <AvatarImage src={speaker.avatar || "/placeholder.svg"} alt={speaker.name} />
               <AvatarFallback className="bg-[#e7f5f9] text-[#004258] text-xs">
-                {speaker.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {speaker.name}
               </AvatarFallback>
             </Avatar>
 
