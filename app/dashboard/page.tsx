@@ -19,7 +19,6 @@ import { userService } from "@/lib/services/user-service"
 import { clientService } from "@/lib/services/client-service"
 import { invoiceService } from "@/lib/services/invoice-service"
 import { Suspense } from "react"
-import { console } from "inspector"
 
 export default async function DashboardPage() {
 

@@ -5,6 +5,8 @@ import { Calendar, Clock, Edit, MapPin, PlusCircle, Trash } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { formatDateWithShortMonth, normalizeDateToISODateOnly } from "@/lib/utils"
 import { SessionSpeakers } from "./session-speakers"
+import { DeleteDialog } from "@/components/delete-dialog"
+import { useState } from "react"
 
 interface ProgramTabProps {
   sessions: any[]
@@ -14,11 +16,14 @@ interface ProgramTabProps {
 }
 
 export function ProgramTab({ sessions, onOpenSlideOver, onDeleteItem, onAddSessionFromProgram }: ProgramTabProps) {
-  console.log("sessions", sessions)
+  const [open, setOpen] = useState(false)
+
   const handleSpeakerClick = (speaker: any) => {
     console.log("Speaker clicked:", speaker)
 
   }
+
+
   if (!sessions || sessions.length === 0) {
     return (
       <Card>
@@ -88,6 +93,7 @@ export function ProgramTab({ sessions, onOpenSlideOver, onDeleteItem, onAddSessi
             <PlusCircle className="mr-2 h-4 w-4" />
             Add Session
           </Button>
+
         </div>
       </CardHeader>
       <CardContent>
@@ -124,9 +130,22 @@ export function ProgramTab({ sessions, onOpenSlideOver, onDeleteItem, onAddSessi
                           <Button variant="outline" size="sm" onClick={() => onOpenSlideOver("editSession", session)}>
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="destructive" size="sm" onClick={() => onDeleteItem("session", session.id)}>
-                            <Trash className="h-4 w-4" />
-                          </Button>
+                          <>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => setOpen(true)} // ← تفتح الديالوج
+                            >
+                              <Trash className="h-4 w-4" />
+                            </Button>
+
+                            <DeleteDialog
+                              open={open}
+                              onOpenChange={setOpen}
+                              Name={session.title}
+                              onConfirm={() => onDeleteItem("session", session.id)}
+                            />
+                          </>
                         </div>
                       </div>
                       <div className="text-sm text-gray-500 flex items-center gap-1">
