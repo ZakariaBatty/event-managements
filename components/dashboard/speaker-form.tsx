@@ -12,37 +12,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Upload } from "lucide-react"
 import Image from "next/image"
 import { speakersData } from "@/data/program"
+import { useFormValidation } from "@/hooks/use-form-validation"
+import { speakerSchema } from "@/lib/schemas"
+import { toast } from "@/components/ui/use-toast"
+import { useRouter } from "next/navigation"
+import { createSpeaker, updateSpeaker } from "@/lib/actions/speaker-actions"
 
 interface SpeakerFormProps {
+  eventId: string,
   speaker?: any
   mode: "create" | "edit"
   onSubmit: (data: any) => void
   onCancel: () => void
 }
 
-export function SpeakerForm({ speaker, mode, onSubmit, onCancel }: SpeakerFormProps) {
+export function SpeakerForm({ eventId, speaker, mode, onSubmit, onCancel }: SpeakerFormProps) {
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
-    name: "",
-    organization: "",
-    bio: "",
-    title: "",
-    avatar: "",
-    sessions: [] as string[],
+    name: mode === "edit" ? speaker.name || "" : "",
+    organization: mode === "edit" ? speaker.organization || "" : "",
+    bio: mode === "edit" ? speaker.bio || "" : "",
+    title: mode === "edit" ? speaker.title || "" : "",
+    avatar: mode === "edit" ? speaker.avatar || "" : "",
+    sessions: mode === "edit" ? speaker.sessions || [] : [],
+    eventId: eventId || "",
   })
 
-  useEffect(() => {
-    if (speaker && mode === "edit") {
-      setFormData({
-        ...formData,
-        name: speaker.name || "",
-        organization: speaker.organization || "",
-        bio: speaker.bio || "",
-        title: speaker.title || "",
-        avatar: speaker.avatar || "",
-        sessions: speaker.sessions || [],
-      })
-    }
-  }, [speaker, mode])
+  const { validate, getFieldError } = useFormValidation(speakerSchema)
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -52,9 +50,57 @@ export function SpeakerForm({ speaker, mode, onSubmit, onCancel }: SpeakerFormPr
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(formData)
+
+    if (!validate(formData)) {
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      // Direct submission to server action with typed data
+      const result = mode === "create" ? await createSpeaker(formData) : await updateSpeaker(speaker.id, formData)
+      console.log("Form submitted successfully:", result)
+      if (result.success) {
+        toast({
+          title: "Success!",
+          description: `Speaker ${mode === "create" ? "created" : "updated"} successfully.`,
+        })
+
+        // Either call the onSubmit callback or refresh the page
+        if (onSubmit) {
+          onSubmit(result.data)
+        } else {
+          router.refresh()
+        }
+      } else {
+        // Handle validation errors from the server
+        if (result.fieldErrors) {
+          // You could set these errors in your form state
+          toast({
+            title: "Validation Error",
+            description: "Please check the form for errors.",
+            variant: "destructive",
+          })
+        } else {
+          toast({
+            title: "Error",
+            description: result.error || "Something went wrong",
+            variant: "destructive",
+          })
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error)
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   // Get organizations from existing speakers data
@@ -101,7 +147,9 @@ export function SpeakerForm({ speaker, mode, onSubmit, onCancel }: SpeakerFormPr
           onChange={handleChange}
           placeholder="Enter speaker's full name"
           required
+          className={getFieldError("name") ? "border-red-500" : ""}
         />
+        {getFieldError("name") && <p className="text-sm text-red-500">{getFieldError("name")}</p>}
       </div>
 
       <div className="space-y-2">
@@ -152,15 +200,17 @@ export function SpeakerForm({ speaker, mode, onSubmit, onCancel }: SpeakerFormPr
           onChange={handleChange}
           placeholder="Enter speaker's biography"
           rows={4}
+          className={getFieldError("bio") ? "border-red-500" : ""}
         />
+        {getFieldError("bio") && <p className="text-sm text-red-500">{getFieldError("bio")}</p>}
       </div>
 
       <div className="flex justify-end gap-2 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
-        <Button type="submit" className="bg-primary hover:bg-primary-light">
-          {mode === "create" ? "Add Speaker" : "Save Changes"}
+        <Button type="submit" className="bg-primary hover:bg-primary-light" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : mode === "create" ? "Add Speaker" : "Save Changes"}
         </Button>
       </div>
     </form>

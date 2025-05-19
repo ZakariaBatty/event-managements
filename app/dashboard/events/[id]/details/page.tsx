@@ -16,6 +16,7 @@ import { SlideOverContent } from "@/components/dashboard/events/details/slide-ov
 import { createSideEventItem, deleteSideEventItem, updateSideEventItem } from "@/lib/actions/programme-actions"
 import { toast } from "@/components/ui/use-toast"
 import { normalizeDateToISODateOnly } from "@/lib/utils"
+import { createSpeaker, deleteSpeaker } from "@/lib/actions/speaker-actions"
 
 export default function EventDetailPage() {
   const params = useParams()
@@ -127,7 +128,39 @@ export default function EventDetailPage() {
       }
       return
     } else if (slideOverContent === "addSpeaker") {
+      setEvent({
+        ...event,
+        speakers: [...event.speakers, {
+          id: data.id,
+          name: data.name,
+          bio: data.bio,
+          organization: data.organization,
+          title: data.title,
+          avatar: data.avatar,
+          _count: {
+            sideEventItem: 0,
+          },
+        }],
+        statistics: {
+          ...event.statistics,
+          speakers: event.statistics.speakers + 1,
+        },
+      })
     } else if (slideOverContent === "editSpeaker" && selectedItem) {
+      setEvent({
+        ...event,
+        speakers: event.speakers.filter((speaker: any) => speaker.id !== selectedItem.id).concat({
+          id: selectedItem.id,
+          name: data.name,
+          bio: data.bio,
+          organization: data.organization,
+          title: data.title,
+          avatar: data.avatar,
+          _count: {
+            sideEventItem: event.speakers.find((speaker: any) => speaker.id === selectedItem.id)?._count.sideEventItem || 0,
+          },
+        }),
+      })
     } else if (slideOverContent === "editLocation") {
     } else if (slideOverContent === "addPartner") {
     } else if (slideOverContent === "editPartner" && selectedItem) {
@@ -174,6 +207,29 @@ export default function EventDetailPage() {
         })
       }
     } else if (type === "speaker") {
+      result = await deleteSpeaker(id)
+
+      if (result.success) {
+        const updatedSpeakers = event.speakers.filter((speaker: any) => speaker.id !== id)
+        setEvent({
+          ...event,
+          speakers: updatedSpeakers,
+          statistics: {
+            ...event.statistics,
+            speakers: event.statistics.speakers - 1,
+          },
+        })
+        toast({
+          title: "Success!",
+          description: "Speaker deleted successfully.",
+        })
+      } else {
+        toast({
+          title: "Error!",
+          description: result.error || "Failed to delete speaker.",
+          variant: "destructive",
+        })
+      }
     } else if (type === "partner") {
     } else if (type === "qrCode") {
     }

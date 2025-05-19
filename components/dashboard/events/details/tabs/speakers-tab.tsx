@@ -108,8 +108,8 @@ export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: Speaker
                     <TableCell>{speaker.organization || "Not specified"}</TableCell>
                     <TableCell>
                       {speaker?._count.sideEventItem
-                        ? `${speaker._count.sideEventItem} session${speaker._count.sideEventItems > 1 ? "s" : ""}`
-                        : "0 sessions"}
+                        ? `${speaker._count.sideEventItem} side event${speaker._count.sideEventItem > 1 ? "s" : ""}`
+                        : "0 side events"}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

@@ -144,11 +144,12 @@ export function SlideOverContent({
         )}
 
         {slideOverContent === "addSpeaker" && (
-          <SpeakerForm mode="create" onSubmit={onFormSubmit} onCancel={() => setSlideOverOpen(false)} />
+          <SpeakerForm eventId={event.id} mode="create" onSubmit={onFormSubmit} onCancel={() => setSlideOverOpen(false)} />
         )}
 
         {slideOverContent === "editSpeaker" && selectedItem && (
           <SpeakerForm
+            eventId={event.id}
             speaker={selectedItem}
             mode="edit"
             onSubmit={onFormSubmit}

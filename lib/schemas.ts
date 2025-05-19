@@ -47,6 +47,7 @@ export const speakerSchema = z.object({
    bio: z.string().min(10, 'Bio must be at least 10 characters').optional(),
    title: z.string().optional(),
    avatar: z.string().optional(),
+   eventId: z.string().min(1, 'Event ID is required'),
 });
 
 // Partner schema
