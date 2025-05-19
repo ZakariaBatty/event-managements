@@ -64,6 +64,7 @@ export function SlideOverContent({
     }
   }
 
+  console.log("event", event)
   return (
     <SlideOver open={slideOverOpen} onClose={() => setSlideOverOpen(false)} side="left" title={getTitle()}>
       <div className="p-4">

@@ -30,19 +30,21 @@ interface SessionFormProps {
 
 export function SessionForm({ eventId, session, mode, onSubmit, onCancel }: SessionFormProps) {
 
+  console.log("SessionForm", { eventId, session, mode })
+
   const [speakers, setSpeakers] = useState<Speaker[]>([])
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
-    title: "",
-    date: null as Date | null,
+    title: mode === "edit" ? session.title || "" : "",
+    date: mode === "edit" ? (session.date ? new Date(session.date) : null) : null,
     time: {
-      start: "",
-      end: "",
+      start: mode === "edit" ? (session.time?.split(" - ")[0] || "") : "",
+      end: mode === "edit" ? (session.time?.split(" - ")[1] || "") : "",
     },
-    type: "MASTER_CLASS",
-    description: "",
-    speakers: [] as string[],
-    location: "",
+    type: mode === "edit" ? session.type || "MASTER_CLASS" : "MASTER_CLASS",
+    description: mode === "edit" ? session.description || "" : "",
+    speakers: mode === "edit" ? session.speakers?.map((item: any) => item.id) || [] : [],
+    location: mode === "edit" ? session.location || "" : "",
   })
 
   const sessionTypes = [
@@ -64,25 +66,27 @@ export function SessionForm({ eventId, session, mode, onSubmit, onCancel }: Sess
       setSpeakers(speakers)
     }
     getSpeakers()
-  }, [eventId])
+  }, [])
 
 
-  useEffect(() => {
-    // Set form data based on session or default values
-    if (session && mode === "edit") {
+  // useEffect(() => {
+  //   if (session && mode === "edit") {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       title: session.title || "",
+  //       date: session.date ? new Date(session.date) : null,
+  //       time: {
+  //         start: session.time?.split(" - ")[0] || "",
+  //         end: session.time?.split(" - ")[1] || "",
+  //       },
+  //       type: session.type || "MASTER_CLASS",
+  //       description: session.description || "",
+  //       speakers: session.speakers?.map((item: any) => item.id) || [],
+  //       location: session.location || "",
+  //     }))
 
-      setFormData({
-        ...formData,
-        title: session.title || "",
-        date: session.date ? new Date(session.date) : null,
-        time: session.time || "",
-        type: session.type || "MASTER_CLASS",
-        description: session.description || "",
-        speakers: session.speakers.map((item: any) => item.id),
-        location: session.location || "",
-      })
-    }
-  }, [session, mode])
+  //   }
+  // }, [session?.id, mode])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -96,7 +100,6 @@ export function SessionForm({ eventId, session, mode, onSubmit, onCancel }: Sess
     })
   }
 
-  // دير هاد الفنكشن لتعويض handleChange لوقت البداية و النهاية
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target; // name غتكون "start" أو "end"
     setFormData({
