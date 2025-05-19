@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Image from "next/image"
 import { EmptyState } from "@/components/ui/empty-state"
+import { DeleteDialog } from "@/components/delete-dialog"
 
 interface SpeakersTabProps {
   speakers: any[]
@@ -16,7 +17,7 @@ interface SpeakersTabProps {
 }
 
 export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: SpeakersTabProps) {
-
+  const [open, setOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
 
   const filteredSpeakers = speakers.filter(
@@ -124,19 +125,23 @@ export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: Speaker
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => onOpenSlideOver("editSpeaker", speaker)}
-                          className="text-gray-500 hover:text-primary"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
                           className="text-gray-500 hover:text-red-500"
                           onClick={() => onDeleteItem("speaker", speaker.id)}
                         >
                           <Trash className="h-4 w-4" />
                         </Button>
+                        <>
+                          <Button variant="ghost" size="icon" className="text-gray-500 hover:text-red-500"
+                            onClick={() => setOpen(true)}>
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                          <DeleteDialog
+                            open={open}
+                            onOpenChange={setOpen}
+                            Name={speaker.name}
+                            onConfirm={() => onDeleteItem("speaker", speaker.id)}
+                          />
+                        </>
                       </div>
                     </TableCell>
                   </TableRow>

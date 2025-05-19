@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Image from "next/image"
 import { EmptyState } from "@/components/ui/empty-state"
+import { DeleteDialog } from "@/components/delete-dialog"
 
 interface PartnersTabProps {
   partners: any[]
@@ -17,6 +18,7 @@ interface PartnersTabProps {
 
 export function PartnersTab({ partners, onOpenSlideOver, onDeleteItem }: PartnersTabProps) {
   const [searchTerm, setSearchTerm] = useState("")
+  const [open, setOpen] = useState(false)
 
   const filteredPartners = partners.filter(
     (partner: any) =>
@@ -134,14 +136,17 @@ export function PartnersTab({ partners, onOpenSlideOver, onDeleteItem }: Partner
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-gray-500 hover:text-red-500"
-                          onClick={() => onDeleteItem("partner", partner.id)}
-                        >
-                          <Trash className="h-4 w-4" />
-                        </Button>
+                        <>
+                          <Button variant="destructive" size="sm" onClick={() => setOpen(true)}>
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                          <DeleteDialog
+                            open={open}
+                            onOpenChange={setOpen}
+                            Name={partner.name}
+                            onConfirm={() => onDeleteItem("partner", partner.id)}
+                          />
+                        </>
                       </div>
                     </TableCell>
                   </TableRow>
