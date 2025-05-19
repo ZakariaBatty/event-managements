@@ -18,6 +18,7 @@ interface SpeakersTabProps {
 
 export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: SpeakersTabProps) {
   const [open, setOpen] = useState(false)
+  const [selectedSpeaker, setSelectedSpeaker] = useState<any | null>(null);
   const [searchTerm, setSearchTerm] = useState("")
 
   const filteredSpeakers = speakers.filter(
@@ -125,22 +126,33 @@ export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: Speaker
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-gray-500 hover:text-red-500"
-                          onClick={() => onDeleteItem("speaker", speaker.id)}
+                          onClick={() => onOpenSlideOver("editSpeaker", speaker)}
+                          className="text-gray-500 hover:text-primary"
                         >
-                          <Trash className="h-4 w-4" />
+                          <Edit className="h-4 w-4" />
                         </Button>
+
                         <>
-                          <Button variant="ghost" size="icon" className="text-gray-500 hover:text-red-500"
-                            onClick={() => setOpen(true)}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-gray-500 hover:text-red-500"
+                            onClick={() => setSelectedSpeaker(speaker)}
+                          >
                             <Trash className="h-4 w-4" />
                           </Button>
                           <DeleteDialog
-                            open={open}
-                            onOpenChange={setOpen}
-                            Name={speaker.name}
-                            onConfirm={() => onDeleteItem("speaker", speaker.id)}
+                            open={!!selectedSpeaker}
+                            onOpenChange={(open) => !open && setSelectedSpeaker(null)}
+                            Name={selectedSpeaker?.name}
+                            onConfirm={() => {
+                              if (selectedSpeaker) {
+                                onDeleteItem("speaker", selectedSpeaker.id);
+                                setSelectedSpeaker(null); // Close the dialog after deletion
+                              }
+                            }}
                           />
+
                         </>
                       </div>
                     </TableCell>
