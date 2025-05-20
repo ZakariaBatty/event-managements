@@ -141,7 +141,6 @@ model QRCode {
 
 model Contact {
   id          String      @id @default(cuid())
-  type        ContactType
   name        String
   email       String?
   phone       String?
@@ -152,21 +151,22 @@ model Contact {
   website     String?
   description String?
   logo        String?
-  tier        String?
+  position    String?
+  domain      String?
+  type        ContactType
   status      ContactStatus @default(PENDING)
   token       String?       @unique
   expiresAt   DateTime?
-  message     String?
-  visibility  Boolean?      @default(true)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+
+
   eventId     String?
   events      Event?        @relation(fields: [eventId], references: [id])
   invoices    Invoice[]
-
- // Here: Many-to-one with Country
   countryId   String?       
   country     Country?      @relation(fields: [countryId], references: [id])
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
 }
 
