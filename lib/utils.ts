@@ -76,3 +76,23 @@ export function formatTime(dateString: string): string {
 export function normalizeDateToISODateOnly(dateInput: string | Date): string {
    return new Date(dateInput).toLocaleDateString('en-CA');
 }
+
+type LocationData = {
+   latitude: number;
+   longitude: number;
+   url: string;
+};
+
+export function parseGoogleMapsUrl(url: string): LocationData | null {
+   try {
+      const match = url.match(/q=(-?\d+(\.\d+)?),(-?\d+(\.\d+)?)/);
+      if (!match) return null;
+
+      const latitude = parseFloat(match[1]);
+      const longitude = parseFloat(match[3]);
+
+      return { latitude, longitude, url };
+   } catch {
+      return null;
+   }
+}

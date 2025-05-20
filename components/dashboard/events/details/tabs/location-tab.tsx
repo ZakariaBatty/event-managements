@@ -1,8 +1,13 @@
 "use client"
 
+
+import "leaflet/dist/leaflet.css"
+import type { LatLngExpression } from "leaflet"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/empty-state"
+import { parseGoogleMapsUrl } from "@/lib/utils"
 import { Edit, MapPin } from "lucide-react"
 
 interface LocationTabProps {
@@ -10,8 +15,15 @@ interface LocationTabProps {
   onOpenSlideOver: (content: string, item?: any) => void
 }
 
+// 👇 dynamic import without SSR
+const MapClient = dynamic(() => import("@/components/MapClient"), {
+  ssr: false,
+})
+
 export function LocationTab({ event, onOpenSlideOver }: LocationTabProps) {
-  if (!event || !event.location) {
+  const location = parseGoogleMapsUrl(event.location)
+
+  if (!event || !event.location || !location) {
     return (
       <Card>
         <CardHeader>
@@ -35,6 +47,8 @@ export function LocationTab({ event, onOpenSlideOver }: LocationTabProps) {
     )
   }
 
+  const center: LatLngExpression = [location.latitude, location.longitude]
+
   return (
     <Card>
       <CardHeader>
@@ -43,32 +57,19 @@ export function LocationTab({ event, onOpenSlideOver }: LocationTabProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-            <MapPin className="h-8 w-8 text-gray-400" />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h3 className="text-sm font-medium text-gray-500">Venue Name</h3>
-              <p className="mt-1">{event.venueName || "Parc des Expositions"}</p>
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-gray-500">Address</h3>
-              <p className="mt-1">{event.location || "Agadir, Morocco"}</p>
-            </div>
-          </div>
+          <MapClient center={center} url={location.url} />
 
           <div>
             <h3 className="text-sm font-medium text-gray-500">Coordinates</h3>
-            <p className="mt-1">{event.coordinates || "Not specified"}</p>
+            <p>{location.latitude}, {location.longitude}</p>
           </div>
 
-          <div className="flex justify-end">
-            <Button onClick={() => onOpenSlideOver("editLocation", event)}>
+          {/* <div className="flex justify-end">
+            <Button onClick={() => console.log("edit")}>
               <Edit className="mr-2 h-4 w-4" />
               Edit Location
             </Button>
-          </div>
+          </div> */}
         </div>
       </CardContent>
     </Card>
