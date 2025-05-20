@@ -17,7 +17,7 @@ interface SpeakersTabProps {
 }
 
 export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: SpeakersTabProps) {
-  const [open, setOpen] = useState(false)
+  console.log(speakers)
   const [selectedSpeaker, setSelectedSpeaker] = useState<any | null>(null);
   const [searchTerm, setSearchTerm] = useState("")
 

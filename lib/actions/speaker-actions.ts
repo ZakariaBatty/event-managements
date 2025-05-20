@@ -4,7 +4,6 @@ import { revalidatePath } from 'next/cache';
 import { speakerService } from '../services/speaker-service';
 import { speakerSchema, type SpeakerFormData } from '../schemas';
 import { z } from 'zod';
-import { Avatar } from '@radix-ui/react-avatar';
 
 // Helper function to handle validation and return a consistent response format
 async function validateAndExecute<T extends z.ZodSchema, U>(
@@ -63,6 +62,8 @@ export async function createSpeaker(data: SpeakerFormData) {
       });
 
       revalidatePath('/dashboard/speakers');
+      revalidatePath(`/dashboard/events/${validData.eventId}/details`);
+
       return speaker;
    });
 }
@@ -79,6 +80,7 @@ export async function updateSpeaker(id: string, data: SpeakerFormData) {
       });
 
       revalidatePath('/dashboard/speakers');
+      revalidatePath(`/dashboard/events/${validData.eventId}/details`);
       return speaker;
    });
 }

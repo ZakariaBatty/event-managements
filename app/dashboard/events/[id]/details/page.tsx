@@ -16,7 +16,7 @@ import { SlideOverContent } from "@/components/dashboard/events/details/slide-ov
 import { createSideEventItem, deleteSideEventItem, updateSideEventItem } from "@/lib/actions/programme-actions"
 import { toast } from "@/components/ui/use-toast"
 import { normalizeDateToISODateOnly } from "@/lib/utils"
-import { createSpeaker, deleteSpeaker } from "@/lib/actions/speaker-actions"
+import { deleteSpeaker } from "@/lib/actions/speaker-actions"
 
 export default function EventDetailPage() {
   const params = useParams()
@@ -208,7 +208,6 @@ export default function EventDetailPage() {
       }
     } else if (type === "speaker") {
       result = await deleteSpeaker(id)
-
       if (result.success) {
         const updatedSpeakers = event.speakers.filter((speaker: any) => speaker.id !== id)
         setEvent({
