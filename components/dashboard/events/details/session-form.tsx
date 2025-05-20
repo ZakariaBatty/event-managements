@@ -100,6 +100,9 @@ export function SessionForm({ eventId, session, mode, onSubmit, onCancel }: Sess
         time: formattedTime,
       }
       await onSubmit(dataToSend)
+    } catch (error) {
+      console.error("Error submitting form:", error)
+      // Handle error (e.g., show a notification)
     } finally {
       setLoading(false)
     }
@@ -217,7 +220,12 @@ export function SessionForm({ eventId, session, mode, onSubmit, onCancel }: Sess
           <MultiSelect
             options={speakers.map((speaker) => ({ label: speaker.name, value: speaker.id }))}
             selected={formData.speakers}
-            onChange={(selected) => setFormData({ ...formData, speakers: selected })}
+            onChange={(selected) => {
+              setFormData({
+                ...formData,
+                speakers: Array.isArray(selected) ? selected : [],
+              })
+            }}
             placeholder="Select speakers"
           />
         </div>

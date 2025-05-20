@@ -79,14 +79,14 @@ export const programmeService = {
 
             const validSpeakerIds = existingSpeakers.map((s) => s.id);
 
-            if (validSpeakerIds.length > 0) {
-               speakersUpdate = {
-                  speakers: {
-                     set: [],
+            speakersUpdate = {
+               speakers: {
+                  set: [], // Clear existing connections
+                  ...(validSpeakerIds.length > 0 && {
                      connect: validSpeakerIds.map((id) => ({ id })),
-                  },
-               };
-            }
+                  }),
+               },
+            };
          }
 
          // Update the programme item

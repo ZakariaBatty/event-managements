@@ -42,7 +42,7 @@ export default function EventDetailPage() {
 
     getEvent()
   }, [eventId])
-
+  console.log("Event:", event)
   const openSlideOver = (content: string, item?: any) => {
     setSlideOverContent(content)
     setSelectedItem(item)
@@ -69,7 +69,7 @@ export default function EventDetailPage() {
         // Update local state for immediate UI update
         const newSession = {
           id: result.data?.id || `s${event.sideEvents.length + 1}`,
-          ...data,
+          ...result.data,
         }
         setEvent({
           ...event,
@@ -99,24 +99,30 @@ export default function EventDetailPage() {
       formData.append("title", data.title)
       formData.append("description", data.description)
       formData.append("date", data.date instanceof Date ? normalizeDateToISODateOnly(data.date) : normalizeDateToISODateOnly(new Date(data.date)));
-      formData.append("speakers", Array.isArray(data.speakers) ? data.speakers : [])
+      formData.append("speakers", data.speakers.length > 0 ? data.speakers.join(",") : "")
       formData.append("location", data.location)
       // Call the server action
       const result = await updateSideEventItem(selectedItem.id, formData)
-
       if (result.success) {
-        // Update local state for immediate UI update
         const updatedSessions = event.sessions.map((session: any) =>
-          session.id === selectedItem.id ? { ...session, ...data } : session,
+          session.id === result.data?.id
+            ? {
+              ...session,
+              ...result.data,
+            }
+            : session
         )
+
         setEvent({
           ...event,
           sessions: updatedSessions,
         })
+
         toast({
           title: "Success!",
           description: "Session updated successfully.",
         })
+
         setSlideOverOpen(false)
       } else {
         console.error("Failed to update session:", result.error)
