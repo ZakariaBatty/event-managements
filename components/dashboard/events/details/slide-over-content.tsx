@@ -2,9 +2,9 @@
 
 import { SlideOver } from "@/components/dashboard/slide-over"
 import { Button } from "@/components/ui/button"
-import { Calendar, Edit, Clock } from "lucide-react"
+import { Calendar, Edit, Clock, MapPin } from "lucide-react"
 import Image from "next/image"
-import { SessionForm } from "@/components/dashboard/session-form"
+import { SessionForm } from "@/components/dashboard/events/details/session-form"
 import { SpeakerForm } from "@/components/dashboard/speaker-form"
 import { LocationForm } from "@/components/dashboard/location-form"
 import { PartnerForm } from "@/components/dashboard/partner-form"
@@ -65,7 +65,7 @@ export function SlideOverContent({
   }
 
   return (
-    <SlideOver open={slideOverOpen} onClose={() => setSlideOverOpen(false)} side="left" title={getTitle()}>
+    <SlideOver open={slideOverOpen} onClose={() => setSlideOverOpen(false)} side="right" title={getTitle()}>
       <div className="p-4">
         {slideOverContent === "viewSpeaker" && selectedItem && (
           <div className="space-y-6">
@@ -91,18 +91,39 @@ export function SlideOverContent({
 
               <div>
                 <h3 className="text-lg font-medium">Sessions</h3>
-                {selectedItem.sessions && selectedItem.sessions.length > 0 ? (
+                {selectedItem.sideEventItem && selectedItem.sideEventItem.length > 0 ? (
                   <ul className="mt-2 space-y-2">
-                    {selectedItem.sessions.map((sessionId: string) => {
-                      const session = event.sessions.find((s: any) => s.id === sessionId)
-                      return session ? (
-                        <li key={sessionId} className="bg-gray-50 p-3 rounded-md">
-                          <p className="font-medium">{session.title}</p>
-                          <p className="text-sm text-gray-500">
-                            {new Date(session.date).toLocaleDateString()} • {session.time}
-                          </p>
-                        </li>
-                      ) : null
+                    {selectedItem.sideEventItem.map((item: any) => {
+                      return (
+                        <div key={item.id} className="border rounded-md p-3">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex justify-between">
+                              <div className="flex items-center gap-2 text-sm font-medium">
+                                {item.type === "MASTER_CLASS" && <span className="text-blue-500">MASTER CLASS:</span>}
+                                {item.type === "SIDE_EVENT" && <span className="text-gray-700">SIDE EVENT:</span>}
+                                {item.type === "NETWORKING" && <span className="text-green-600">NETWORKING:</span>}
+                                {item.type === "SHOWCASE" && <span className="text-amber-600">SHOWCASE:</span>}
+                                {item.type === "ROUNDTABLE" && <span className="text-purple-600">ROUNDTABLE:</span>}
+                                {item.type === "WORKSHOP" && <span className="text-amber-600">WORKSHOP:</span>}
+                                {item.type === "KEYNOTE" && <span className="text-red-600">KEYNOTE:</span>}
+                                {item.type === "PANEL" && <span className="text-yellow-600">PANEL:</span>}
+                                <div className="text-base font-semibold">{item.title}</div>
+                              </div>
+                            </div>
+                            <div className="text-sm text-gray-500 flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{item.time || "Time not set"}</span>
+                              {item.location && (
+                                <>
+                                  <MapPin className="h-4 w-4" />
+                                  <span>{item.location}</span>
+                                </>
+                              )}
+                            </div>
+                            <p className="mt-2 text-sm">{item.description}</p>
+                          </div>
+                        </div>
+                      )
                     })}
                   </ul>
                 ) : (
@@ -129,27 +150,29 @@ export function SlideOverContent({
         )}
 
         {slideOverContent === "addSession" && (
-          <SessionForm mode="create" onSubmit={onFormSubmit} onCancel={() => setSlideOverOpen(false)} />
+          <SessionForm eventId={event.id} mode="create" onSubmit={onFormSubmit} onCancel={() => setSlideOverOpen(false)} />
         )}
 
         {slideOverContent === "editSession" && selectedItem && (
           <SessionForm
+            eventId={event.id}
             session={selectedItem}
             mode="edit"
-            onSubmit={() => onFormSubmit({})}
+            onSubmit={onFormSubmit}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}
 
         {slideOverContent === "addSpeaker" && (
-          <SpeakerForm mode="create" onSubmit={onFormSubmit} onCancel={() => setSlideOverOpen(false)} />
+          <SpeakerForm eventId={event.id} mode="create" onSubmit={onFormSubmit} onCancel={() => setSlideOverOpen(false)} />
         )}
 
         {slideOverContent === "editSpeaker" && selectedItem && (
           <SpeakerForm
+            eventId={event.id}
             speaker={selectedItem}
             mode="edit"
-            onSubmit={() => onFormSubmit({})}
+            onSubmit={onFormSubmit}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}
@@ -166,7 +189,7 @@ export function SlideOverContent({
           <PartnerForm
             partner={selectedItem}
             mode="edit"
-            onSubmit={() => onFormSubmit({})}
+            onSubmit={onFormSubmit}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}
@@ -179,7 +202,7 @@ export function SlideOverContent({
           <QRCodeForm
             qrCode={selectedItem}
             mode="edit"
-            onSubmit={() => onFormSubmit({})}
+            onSubmit={onFormSubmit}
             onCancel={() => setSlideOverOpen(false)}
           />
         )}

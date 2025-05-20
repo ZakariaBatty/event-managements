@@ -1,4 +1,3 @@
-import { SessionType } from '@prisma/client';
 import { sideEventItemRepository } from '../repositories/side-event-repository';
 import { SessionFormData } from '../schemas';
 import { speakerRepository } from '../repositories/speaker-repository';
@@ -45,7 +44,7 @@ export const programmeService = {
             title: data.title,
             description: data.description || '',
             time: data.time || '',
-            type: data.type as SessionType,
+            type: data.type as string,
             location: data.location || '',
             date: data.date,
             event: {
@@ -69,13 +68,23 @@ export const programmeService = {
 
    async updateProgrammeItem(id: string, data: Partial<SessionFormData>) {
       try {
-         // Handle speakers update
          let speakersUpdate = {};
-         if (data.speakerIds) {
+         if (data.speakerIds && Array.isArray(data.speakerIds)) {
+            const existingSpeakers = await speakerRepository.findAll({
+               where: {
+                  id: { in: data.speakerIds },
+               },
+               select: { id: true },
+            });
+
+            const validSpeakerIds = existingSpeakers.map((s) => s.id);
+
             speakersUpdate = {
                speakers: {
                   set: [], // Clear existing connections
-                  connect: data.speakerIds.map((id) => ({ id })),
+                  ...(validSpeakerIds.length > 0 && {
+                     connect: validSpeakerIds.map((id) => ({ id })),
+                  }),
                },
             };
          }
@@ -87,7 +96,7 @@ export const programmeService = {
                description: data.description,
             }),
             ...(data.time !== undefined && { time: data.time }),
-            ...(data.type && { type: data.type as SessionType }),
+            ...(data.type && { type: data.type as string }),
             ...(data.location !== undefined && { location: data.location }),
             ...(data.date && { date: data.date }),
             ...speakersUpdate,

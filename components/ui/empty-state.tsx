@@ -10,7 +10,7 @@ interface EmptyStateProps {
 
 export function EmptyState({ title, description, icon, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center h-[calc(100vh-432px)]">
+    <div className="flex w-full flex-col items-center justify-center h-[calc(100vh-432px)]">
       <Card className="w-full max-w-md">
         <CardContent className="flex flex-col items-center justify-center pt-6 text-center">
           {icon && <div className="mb-4 text-muted-foreground">{icon}</div>}

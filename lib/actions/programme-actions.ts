@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { sessionSchema, type SessionFormData } from '../schemas';
 import { programmeService } from '../services/programme-service';
 import { revalidatePath } from 'next/cache';
+import { normalizeDateToISODateOnly } from '../utils';
 
 export async function createSideEventItem(
    formData: FormData | SessionFormData
@@ -15,7 +16,9 @@ export async function createSideEventItem(
          // Extract the values from the FormData object
          data = {
             title: formData.get('title') as string,
-            date: new Date(formData.get('date') as string),
+            date: new Date(
+               normalizeDateToISODateOnly(formData.get('date') as string)
+            ),
             time: formData.get('time') as string,
             type: formData.get('type') as string,
             description: (formData.get('description') as string) || '',
@@ -74,11 +77,14 @@ export async function updateSideEventItem(
             type: formData.get('type') as string,
             description: (formData.get('description') as string) || '',
             location: (formData.get('location') as string) || '',
-            speakerIds: formData.get('speakers')
-               ? (formData.get('speakers') as string)
-                    .split(',')
-                    .map((id) => id.trim())
-               : undefined,
+            speakerIds: (() => {
+               const raw = formData.get('speakers') as string | null;
+               if (!raw || raw.trim() === '') return [];
+               return raw
+                  .split(',')
+                  .map((id) => id.trim())
+                  .filter((id) => id !== '');
+            })(),
          };
       } else {
          // Direct object passing
@@ -91,7 +97,7 @@ export async function updateSideEventItem(
       // Get the event ID for revalidation
       const item = await programmeService.getProgrammeItem(id);
       if (item) {
-         revalidatePath(`/dashboard/events/${item.eventId}/details`);
+         revalidatePath(`/dashboard/events/${item.eventId}/details`, 'page');
       }
 
       return { success: true, data: result };

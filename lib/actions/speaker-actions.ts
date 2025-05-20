@@ -41,6 +41,10 @@ async function validateAndExecute<T extends z.ZodSchema, U>(
    }
 }
 
+export async function getSpeakersByEventId(id: string) {
+   return await speakerService.getSpeakersByEvent(id);
+}
+
 // Updated to accept a typed object directly
 export async function createSpeaker(data: SpeakerFormData) {
    return validateAndExecute(speakerSchema, data, async (validData) => {
@@ -49,10 +53,17 @@ export async function createSpeaker(data: SpeakerFormData) {
          organization: validData.organization,
          title: validData.title || '',
          bio: validData.bio || '',
-         pdfUrl: validData.avatar || '',
+         avatar: validData.avatar || '',
+         events: validData.eventId
+            ? {
+                 connect: { id: validData.eventId },
+              }
+            : undefined,
       });
 
       revalidatePath('/dashboard/speakers');
+      revalidatePath(`/dashboard/events/${validData.eventId}/details`);
+
       return speaker;
    });
 }
@@ -65,10 +76,11 @@ export async function updateSpeaker(id: string, data: SpeakerFormData) {
          organization: validData.organization,
          title: validData.title || '',
          bio: validData.bio || '',
-         pdfUrl: validData.avatar || '',
+         avatar: validData.avatar || '',
       });
 
       revalidatePath('/dashboard/speakers');
+      revalidatePath(`/dashboard/events/${validData.eventId}/details`);
       return speaker;
    });
 }

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Image from "next/image"
 import { EmptyState } from "@/components/ui/empty-state"
+import { DeleteDialog } from "@/components/delete-dialog"
 
 interface SpeakersTabProps {
   speakers: any[]
@@ -16,7 +17,8 @@ interface SpeakersTabProps {
 }
 
 export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: SpeakersTabProps) {
-
+  console.log(speakers)
+  const [selectedSpeaker, setSelectedSpeaker] = useState<any | null>(null);
   const [searchTerm, setSearchTerm] = useState("")
 
   const filteredSpeakers = speakers.filter(
@@ -108,8 +110,8 @@ export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: Speaker
                     <TableCell>{speaker.organization || "Not specified"}</TableCell>
                     <TableCell>
                       {speaker?._count.sideEventItem
-                        ? `${speaker._count.sideEventItem} session${speaker._count.sideEventItems > 1 ? "s" : ""}`
-                        : "0 sessions"}
+                        ? `${speaker._count.sideEventItem} side event${speaker._count.sideEventItem > 1 ? "s" : ""}`
+                        : "0 side events"}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -129,14 +131,29 @@ export function SpeakersTab({ speakers, onOpenSlideOver, onDeleteItem }: Speaker
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-gray-500 hover:text-red-500"
-                          onClick={() => onDeleteItem("speaker", speaker.id)}
-                        >
-                          <Trash className="h-4 w-4" />
-                        </Button>
+
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-gray-500 hover:text-red-500"
+                            onClick={() => setSelectedSpeaker(speaker)}
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                          <DeleteDialog
+                            open={!!selectedSpeaker}
+                            onOpenChange={(open) => !open && setSelectedSpeaker(null)}
+                            Name={selectedSpeaker?.name}
+                            onConfirm={() => {
+                              if (selectedSpeaker) {
+                                onDeleteItem("speaker", selectedSpeaker.id);
+                                setSelectedSpeaker(null); // Close the dialog after deletion
+                              }
+                            }}
+                          />
+
+                        </>
                       </div>
                     </TableCell>
                   </TableRow>

@@ -6,7 +6,6 @@ import {
    PrismaClient,
    QRCodeType,
    Role,
-   SessionType,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -275,7 +274,7 @@ async function createSideEventItems(
    events: any[],
    speakers: any[]
 ) {
-   const sessionTypes: SessionType[] = [
+   const sessionTypes: any[] = [
       'MASTER_CLASS',
       'WORKSHOP',
       'KEYNOTE',

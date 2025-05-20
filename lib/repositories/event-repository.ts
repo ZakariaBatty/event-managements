@@ -26,6 +26,7 @@ export const eventRepository = {
             },
             speakers: {
                include: {
+                  sideEventItem: true,
                   _count: {
                      select: {
                         sideEventItem: true,

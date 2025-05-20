@@ -45,7 +45,7 @@ export const speakerRepository = {
       return prisma.speaker.count({ where });
    },
 
-   async findByEvent(eventId: string) {
+   async findSpeakersWithItemsByEvent(eventId: string) {
       return prisma.speaker.findMany({
          where: {
             events: {
@@ -56,6 +56,18 @@ export const speakerRepository = {
          },
          include: {
             sideEventItem: true,
+         },
+      });
+   },
+
+   async findByEvent(eventId: string) {
+      return prisma.speaker.findMany({
+         where: {
+            events: {
+               some: {
+                  id: eventId,
+               },
+            },
          },
       });
    },
