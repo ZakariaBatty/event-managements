@@ -21,8 +21,8 @@ export function EventTabs({ event, onOpenSlideOver, onDeleteItem, onAddSessionFr
         <TabsTrigger value="speakers">(1) Speakers</TabsTrigger>
         <TabsTrigger value="program">(2) Program</TabsTrigger>
         <TabsTrigger value="location">(3) Location</TabsTrigger>
-        <TabsTrigger value="partners">(4) Partners</TabsTrigger>
-        {/* <TabsTrigger value="qrcodes">(5) QR Codes</TabsTrigger> */}
+        {/* <TabsTrigger value="partners">(4) Partners</TabsTrigger> */}
+        <TabsTrigger value="qrcodes">(4) QR Codes</TabsTrigger>
       </TabsList>
 
       <TabsContent value="program" className="space-y-4 pt-4">
