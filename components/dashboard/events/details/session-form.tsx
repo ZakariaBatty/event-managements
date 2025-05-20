@@ -30,8 +30,6 @@ interface SessionFormProps {
 
 export function SessionForm({ eventId, session, mode, onSubmit, onCancel }: SessionFormProps) {
 
-  console.log("SessionForm", { eventId, session, mode })
-
   const [speakers, setSpeakers] = useState<Speaker[]>([])
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -68,25 +66,6 @@ export function SessionForm({ eventId, session, mode, onSubmit, onCancel }: Sess
     getSpeakers()
   }, [])
 
-
-  // useEffect(() => {
-  //   if (session && mode === "edit") {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       title: session.title || "",
-  //       date: session.date ? new Date(session.date) : null,
-  //       time: {
-  //         start: session.time?.split(" - ")[0] || "",
-  //         end: session.time?.split(" - ")[1] || "",
-  //       },
-  //       type: session.type || "MASTER_CLASS",
-  //       description: session.description || "",
-  //       speakers: session.speakers?.map((item: any) => item.id) || [],
-  //       location: session.location || "",
-  //     }))
-
-  //   }
-  // }, [session?.id, mode])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target

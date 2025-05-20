@@ -95,12 +95,6 @@ export function SlideOverContent({
                   <ul className="mt-2 space-y-2">
                     {selectedItem.sideEventItem.map((item: any) => {
                       return (
-                        // <li key={item.id} className="bg-gray-50 p-3 rounded-md">
-                        //   <p className="font-medium">{item.title}</p>
-                        //   <p className="text-sm text-gray-500">
-                        //     {new Date(item.date).toLocaleDateString()} • {item.time}
-                        //   </p>
-                        // </li>
                         <div key={item.id} className="border rounded-md p-3">
                           <div className="flex flex-col gap-1">
                             <div className="flex justify-between">
