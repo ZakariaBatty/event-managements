@@ -3,6 +3,7 @@ import { inviteRepository } from '../repositories/invite-repository';
 
 export const inviteService = {
    async getInvites(page = 1, limit = 10, filters = {}) {
+      console.log('Fetching invites with filters:', filters);
       const { type, ...otherFilters } = filters as any;
       const whereClause: any = { ...otherFilters };
 
@@ -21,7 +22,7 @@ export const inviteService = {
                events: true,
             },
             orderBy: {
-               createdAt: 'desc',
+               createdAt: 'asc',
             },
          }),
          inviteRepository.count(whereClause),

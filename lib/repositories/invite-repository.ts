@@ -77,13 +77,13 @@ export const inviteRepository = {
       const [total, confirmed, pending, declined] = await Promise.all([
          prisma.contact.count({ where: whereClause }),
          prisma.contact.count({
-            where: { ...whereClause, status: 'confirmed' as ContactStatus },
+            where: { ...whereClause, status: 'ACCEPTED' as ContactStatus },
          }),
          prisma.contact.count({
-            where: { ...whereClause, status: 'pending' as ContactStatus },
+            where: { ...whereClause, status: 'PENDING' as ContactStatus },
          }),
          prisma.contact.count({
-            where: { ...whereClause, status: 'declined' as ContactStatus },
+            where: { ...whereClause, status: 'DECLINED' as ContactStatus },
          }),
       ]);
 

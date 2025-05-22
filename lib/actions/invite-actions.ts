@@ -25,7 +25,10 @@ export async function getInviteById(id: string) {
    }
 }
 
-export async function getInvitesByEventId(eventId: string, type: 'INVITE') {
+export async function getInvitesByEventId(
+   eventId: string,
+   type: 'INVITE' | 'CLIENT'
+) {
    try {
       const data = await inviteService.getInvitesByEvent(eventId, type);
       return { success: true, data };
@@ -35,7 +38,10 @@ export async function getInvitesByEventId(eventId: string, type: 'INVITE') {
    }
 }
 
-export async function getInvitesByStatus(status: string, type: 'INVITE') {
+export async function getInvitesByStatus(
+   status: string,
+   type: 'INVITE' | 'CLIENT'
+) {
    try {
       const data = await inviteService.getInviteStats(status, type);
       return { success: true, data };
