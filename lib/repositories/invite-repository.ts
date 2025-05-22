@@ -96,7 +96,7 @@ export const inviteRepository = {
 
       // Get domain stats
       const domainStats = await prisma.contact.groupBy({
-         by: ['tier'],
+         by: ['domain'],
          where: whereClause,
          _count: true,
       });

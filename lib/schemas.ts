@@ -97,12 +97,19 @@ export const locationSchema = z.object({
 
 // Invite schema
 export const inviteSchema = z.object({
-   email: z.string().email('Please enter a valid email address'),
    name: z.string().min(2, 'Name must be at least 2 characters'),
-   eventId: z.string().min(1, 'Event is required'),
-   message: z.string().optional(),
-   expiresAt: z.date().nullable().optional(),
-   sendEmail: z.boolean().default(true),
+   email: z.string().email('Please enter a valid email address').optional(),
+   phone: z.string().optional(),
+   address: z.string().optional(),
+   notes: z.string().optional(),
+   position: z.string().optional(),
+   domain: z.string().optional(),
+
+   type: z.enum(['INVITE', 'VISITOR', 'CLIENT']).default('INVITE'),
+   status: z.enum(['PENDING', 'APPROVED', 'REJECTED']).default('PENDING'),
+
+   eventId: z.string().min(1, 'Event ID is required'),
+   countryId: z.string().optional(),
 });
 
 // Define types from schemas

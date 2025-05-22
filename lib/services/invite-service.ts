@@ -100,8 +100,8 @@ export const inviteService = {
          notes: data.notes,
          position: data.position,
          domain: data.domain,
-         type: data.type || 'INVITE', // Default type if not provided
-         status: data.status || 'pending',
+         type: data.type || 'INVITE',
+         status: data.status || 'PENDING',
          events: {
             connect: {
                id: data.eventId,
