@@ -42,7 +42,7 @@ export default function EventDetailPage() {
 
     getEvent()
   }, [eventId])
-  console.log("Event:", event)
+
   const openSlideOver = (content: string, item?: any) => {
     setSlideOverContent(content)
     setSelectedItem(item)

@@ -112,6 +112,14 @@ export const inviteSchema = z.object({
    countryId: z.string().optional(),
 });
 
+export type Country = {
+   id: string;
+   name: string;
+   code: string;
+   createdAt: Date;
+   updatedAt: Date;
+};
+
 // Define types from schemas
 export type EventFormData = z.infer<typeof eventSchema>;
 export type SessionFormData = z.infer<typeof sessionSchema>;

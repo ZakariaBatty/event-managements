@@ -16,6 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Spinner } from "@/components/ui/spinner"
 
 interface InviteFormProps {
   invite?: any
@@ -25,31 +26,29 @@ interface InviteFormProps {
 }
 
 export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps) {
-  console.log("InviteForm", { invite, mode })
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [] = useState()
+
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-    notes: "",
-    position: "",
-    domain: "Industry",
-    type: "INVITE",
-    status: "APPROVED",
-    eventId: "",
-    countryId: "",
+    name: mode !== "create" ? invite.name || "" : "",
+    email: mode !== "create" ? invite.email || "" : "",
+    phone: mode !== "create" ? invite.phone || "" : "",
+    notes: mode !== "create" ? invite.notes || "" : "",
+    position: mode !== "create" ? invite.position || "" : "",
+    domain: mode !== "create" ? invite.domain || "Industry" : "Industry",
+    type: mode !== "create" ? invite.type || "INVITE" : "INVITE",
+    status: mode !== "create" ? invite.status || "APPROVED" : "APPROVED",
+    eventId: mode !== "create" ? invite.eventId || "" : "",
+    countryId: mode !== "create" ? invite.countryId || "" : "",
   })
 
   useEffect(() => {
-    if (invite && (mode === "edit" || mode === "view")) {
-      setFormData({
-        ...formData,
-        ...invite,
-        arrivalDate: invite.arrivalDate ? new Date(invite.arrivalDate) : null,
-        departureDate: invite.departureDate ? new Date(invite.departureDate) : null,
-      })
+    const getData = async () => {
+
     }
-  }, [invite, mode])
+    getData()
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -69,15 +68,23 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
   const handleStatusChange = (checked: boolean) => {
     setFormData({
       ...formData,
-      status: checked ? "confirmed" : "pending",
+      status: checked ? "ACCEPTED" : "PENDING",
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     // In a real app, you would call an API to save the invite
-    console.log("Form data to save:", formData)
-    onSubmit({ ...formData })
+    try {
+      console.log("Form data to save:", formData)
+      await onSubmit({ ...formData })
+    } catch (error) {
+      console.error("Error submitting form:", error)
+      // Handle error (e.g., show a notification)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const isReadOnly = mode === "view"
@@ -224,7 +231,8 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
           </Button>
           {!isReadOnly && (
             <Button type="submit" className="bg-primary hover:bg-primary-light">
-              {mode === "create" ? "Send Invite" : "Save Changes"}
+              {isLoading ? <Spinner className="mr-2 h-4 w-4" /> : null}
+              {isLoading ? "Loading..." : mode === "create" ? "Send Invite" : "Save Changes"}
             </Button>
           )}
         </div>

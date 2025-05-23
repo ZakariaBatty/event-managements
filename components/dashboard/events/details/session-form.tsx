@@ -236,7 +236,7 @@ export function SessionForm({ eventId, session, mode, onSubmit, onCancel }: Sess
         </Button>
         <Button type="submit" className="bg-primary hover:bg-primary-light">
           {loading ? <Spinner className="mr-2 h-4 w-4" /> : null}
-          {loading ? "Saving..." : mode === "create" ? "Add Session" : "Save Changes"}
+          {loading ? "Loading..." : mode === "create" ? "Add Session" : "Save Changes"}
 
         </Button>
       </div>

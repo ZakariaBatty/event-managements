@@ -31,7 +31,7 @@ export function InvitesClientComponent({ initialInvites, initialStats, countries
   const { toast } = useToast()
   const [searchTerm, setSearchTerm] = useState("")
   const [slideOverOpen, setSlideOverOpen] = useState(false)
-  const [selectedInvite, setSelectedInvite] = useState(null)
+  const [selectedInvite, setSelectedInvite] = useState<any>(null)
   const [slideOverMode, setSlideOverMode] = useState<"create" | "edit" | "view">("create")
   const [showFilters, setShowFilters] = useState(false)
   const [filters, setFilters] = useState({
@@ -43,16 +43,6 @@ export function InvitesClientComponent({ initialInvites, initialStats, countries
   const [invites, setInvites] = useState(initialInvites)
   const [stats, setStats] = useState(initialStats)
   const [activeType, setActiveType] = useState(initialType || "invites")
-
-  // // Update URL when type changes
-  // useEffect(() => {
-  //   const expectedType = activeType === "invites" ? "INVITE" : "CLIENT"
-  //   const currentType = new URLSearchParams(window.location.search).get("type")
-
-  //   if (expectedType !== currentType) {
-  //     router.push(`/dashboard/invites?type=${expectedType}`)
-  //   }
-  // }, [activeType, router])
 
   // Apply filters and search
   const filteredInvites = invites.filter((invite) => {
@@ -139,9 +129,9 @@ export function InvitesClientComponent({ initialInvites, initialStats, countries
     let result
 
     if (slideOverMode === "create") {
-      result = await createInvite(new FormData(data.target))
+      result = await createInvite(new FormData(data))
     } else if (selectedInvite) {
-      // result = await updateInvite(selectedInvite.id, new FormData(data.target))
+      result = await updateInvite(selectedInvite.id, new FormData(data.target))
     } else {
       toast({
         title: "Error",
@@ -150,27 +140,27 @@ export function InvitesClientComponent({ initialInvites, initialStats, countries
       })
       return
     }
+    console.log("result", result)
+    if (result.success) {
+      setSlideOverOpen(false)
 
-    // if (result.success) {
-    //   setSlideOverOpen(false)
+      toast({
+        title: slideOverMode === "create" ? "Invite created" : "Invite updated",
+        description:
+          slideOverMode === "create"
+            ? "The invite has been created successfully."
+            : `The invite for ${selectedInvite.name} has been updated.`,
+      })
 
-    //   toast({
-    //     title: slideOverMode === "create" ? "Invite created" : "Invite updated",
-    //     description:
-    //       slideOverMode === "create"
-    //         ? "The invite has been created successfully."
-    //         : `The invite for ${selectedInvite.name} has been updated.`,
-    //   })
-
-    //   // Refresh the page to get updated data
-    //   router.refresh()
-    // } else {
-    //   toast({
-    //     title: "Error",
-    //     description: result.error || `Failed to ${slideOverMode} invite`,
-    //     variant: "destructive",
-    //   })
-    // }
+      // Refresh the page to get updated data
+      router.refresh()
+    } else {
+      toast({
+        title: "Error",
+        description: result.error || `Failed to ${slideOverMode} invite`,
+        variant: "destructive",
+      })
+    }
   }
 
   const handleTypeChange = (type: string) => {
