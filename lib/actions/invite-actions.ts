@@ -5,9 +5,19 @@ import { inviteSchema, type InviteFormData } from '../schemas';
 import { inviteService } from '../services/invite-service';
 import { revalidatePath } from 'next/cache';
 
-export async function getInvites() {
+export async function getInvites({
+   page,
+   limit,
+   type,
+}: {
+   page: number;
+   limit: number;
+   type: 'INVITE' | 'CLIENT';
+}) {
    try {
-      const { data, meta } = await inviteService.getInvites(1, 50);
+      const { data, meta } = await inviteService.getInvites(page, limit, {
+         type,
+      });
       return { success: true, data, meta };
    } catch (error) {
       console.error('Failed to get invites:', error);
@@ -38,13 +48,10 @@ export async function getInvitesByEventId(
    }
 }
 
-export async function getInvitesByStatus(
-   status: string,
-   type: 'INVITE' | 'CLIENT'
-) {
+export async function getInvitesByStatus(eventId?: string, type?: string) {
    try {
-      const data = await inviteService.getInviteStats(status, type);
-      return { success: true, data };
+      const stats = await inviteService.getInviteStats(eventId, type);
+      return { success: true, stats };
    } catch (error) {
       console.error('Failed to get invites by status:', error);
       return { success: false, error: 'Failed to get invites by status' };

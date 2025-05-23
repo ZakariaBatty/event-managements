@@ -2,34 +2,38 @@ import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { inviteService } from "@/lib/services/invite-service"
 import { InvitesClientComponent } from "@/components/dashboard/invites/invites-client-component"
+import { getInvites, getInvitesByStatus } from "@/lib/actions/invite-actions"
 
 export const metadata = {
   title: "Invites | Dashboard",
 }
 
-export default async function InvitesPage({ searchParams }: { searchParams: any }) {
-  // Get the type filter from query params, default to all invites
-  const type = await searchParams?.type || undefined
+export const dynamic = "force-dynamic"
 
-  // Fetch invites data with type filter if provided
-  const { data: invites } = await inviteService.getInvites(1, 50, type ? { type } : {})
 
-  // Fetch stats with type filter if provided
-  const stats = await inviteService.getInviteStats(undefined, type)
+export default async function InvitesPage(context: {
+  searchParams: Promise<{ page?: string; limit?: string; }>;
+}) {
+  const param = await context.searchParams;
 
-  // Fetch countries for filters
-  const countries = await inviteService.getCountries()
+  const page = param.page ? Number.parseInt(param.page) : 1;
+  const limit = param.limit ? Number.parseInt(param.limit) : 10;
+
+  const { data, meta } = await getInvites({ page, limit, type: "INVITE" });
+
+  const { stats } = await getInvitesByStatus(undefined, "INVITE");
+  const countries = await inviteService.getCountries();
 
   return (
     <div className="space-y-4 md:space-y-6">
       <Suspense fallback={<Skeleton className="w-full h-[500px]" />}>
         <InvitesClientComponent
-          initialInvites={invites}
-          initialStats={stats}
+          initialInvites={data ?? []}
+          initialStats={stats as any}
           countries={countries}
-          initialType={type}
+          meta={meta}
         />
       </Suspense>
     </div>
-  )
+  );
 }

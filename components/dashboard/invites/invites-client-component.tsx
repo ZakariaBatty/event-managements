@@ -15,23 +15,20 @@ import { InviteTable } from "./invite-table"
 
 type invitePros = {
   initialInvites: any[]
-  initialStats: {
-    totalInvites: number
-    confirmedInvites: number
-    pendingInvites: number
-    declinedInvites: number
-  }
+  initialStats: any
   countries: { id: string; name: string }[]
   initialType?: string
+  meta?: {
+    page: number
+    limit: number
+    total: number
+    pageCount: number
+  }
 }
 
-export function InvitesClientComponent({ initialInvites, initialStats, countries, initialType = "" }: invitePros) {
+export function InvitesClientComponent({ initialInvites, initialStats, countries, initialType = "", meta }: invitePros) {
   const router = useRouter()
   const { toast } = useToast()
-  // console.log("initialInvites", initialInvites)
-  // console.log("initialStats", initialStats)
-  // console.log("countries", countries)
-  // console.log("initialType", initialType)
   const [searchTerm, setSearchTerm] = useState("")
   const [slideOverOpen, setSlideOverOpen] = useState(false)
   const [selectedInvite, setSelectedInvite] = useState(null)
@@ -47,15 +44,15 @@ export function InvitesClientComponent({ initialInvites, initialStats, countries
   const [stats, setStats] = useState(initialStats)
   const [activeType, setActiveType] = useState(initialType || "invites")
 
-  // Update URL when type changes
-  useEffect(() => {
-    if (activeType && activeType === "invites") {
-      router.push(`/dashboard/invites?type=INVITE`)
-      // router.push(`/dashboard/invites?type=${activeType === "invites" ? "INVITE" : "CLIENT"}`)
-    } else {
-      router.push(`/dashboard/invites?type=CLIENT`)
-    }
-  }, [activeType, router])
+  // // Update URL when type changes
+  // useEffect(() => {
+  //   const expectedType = activeType === "invites" ? "INVITE" : "CLIENT"
+  //   const currentType = new URLSearchParams(window.location.search).get("type")
+
+  //   if (expectedType !== currentType) {
+  //     router.push(`/dashboard/invites?type=${expectedType}`)
+  //   }
+  // }, [activeType, router])
 
   // Apply filters and search
   const filteredInvites = invites.filter((invite) => {
@@ -76,13 +73,6 @@ export function InvitesClientComponent({ initialInvites, initialStats, countries
   })
 
   // Get unique values for filters
-  // const domains = [...new Set(invites.map((invite) => invite.domain).filter(Boolean))]
-  // const events = [...new Set(invites.map((invite) => invite.event?.title).filter(Boolean))].map((title) => {
-  //   const invite = invites.find((i) => i.events?.title === title)
-  //   return { id: invite.events?.id, title }
-  // })
-
-
   const countries_ = [...new Set(invites.map((invite) => invite.country).filter(Boolean))]
   const domains = [...new Set(invites.map((invite) => invite.domain).filter(Boolean))]
   const events = [...new Set(invites.map((invite) => invite.events).filter(Boolean))]
@@ -207,7 +197,7 @@ export function InvitesClientComponent({ initialInvites, initialStats, countries
         </div>
       </div>
 
-      <InviteTypesTabs activeType={activeType} types={types} onTypeChange={handleTypeChange} />
+      {/* <InviteTypesTabs activeType={activeType} types={types} onTypeChange={handleTypeChange} /> */}
 
       <InviteStats stats={stats} />
 
@@ -232,9 +222,10 @@ export function InvitesClientComponent({ initialInvites, initialStats, countries
         onView={handleViewInvite}
         onEdit={handleEditInvite}
         onDelete={handleDeleteInvite}
+        meta={meta ?? { page: 1, limit: 10, total: 0, pageCount: 1 }}
       />
 
-      {/* <SlideOver
+      <SlideOver
         open={slideOverOpen}
         onClose={() => setSlideOverOpen(false)}
         side="right"
@@ -250,7 +241,7 @@ export function InvitesClientComponent({ initialInvites, initialStats, countries
           countries={countries}
           events={events}
         />
-      </SlideOver> */}
+      </SlideOver>
     </div>
   )
 }

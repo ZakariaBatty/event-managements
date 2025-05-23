@@ -3,14 +3,12 @@ import { inviteRepository } from '../repositories/invite-repository';
 
 export const inviteService = {
    async getInvites(page = 1, limit = 10, filters = {}) {
-      console.log('Fetching invites with filters:', filters);
       const { type, ...otherFilters } = filters as any;
       const whereClause: any = { ...otherFilters };
 
       if (type) {
          whereClause.type = type;
       }
-
       const skip = (page - 1) * limit;
       const [data, total] = await Promise.all([
          inviteRepository.findAll({

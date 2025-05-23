@@ -10,7 +10,7 @@ interface InviteTypesTabsProps {
 
 export function InviteTypesTabs({ activeType, types, onTypeChange }: InviteTypesTabsProps) {
   return (
-    <Tabs defaultValue={activeType} onValueChange={onTypeChange} className="w-full">
+    <Tabs defaultValue={activeType ?? "Invites"} onValueChange={onTypeChange} className="w-full">
       <TabsList className="grid grid-cols-2 md:grid-cols-2 mb-4">
         {types.map((type) => (
           <TabsTrigger key={type} value={type} className="capitalize">
