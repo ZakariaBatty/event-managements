@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Mail, Edit, Eye, Search, Trash, Filter, Download } from "lucide-react"
 import { SlideOver } from "@/components/dashboard/slide-over"
-import { InviteForm } from "@/components/dashboard/invite-form"
+import { InviteForm } from "@/components/dashboard/invites/invite-form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 // Mock data for invites (keeping the same data)

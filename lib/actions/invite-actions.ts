@@ -78,9 +78,7 @@ export async function createInvite(formData: FormData) {
             name: formData.get('name') as string,
             email: formData.get('email') as string,
             phone: formData.get('phone') as string,
-            address: formData.get('address') as string,
             notes: formData.get('notes') as string,
-            position: formData.get('position') as string,
             domain: formData.get('domain') as string,
             type: formData.get('type') as 'INVITE' | 'VISITOR' | 'CLIENT',
             status: formData.get('status') as
@@ -126,9 +124,7 @@ export async function updateInvite(id: string, formData: FormData) {
             name: formData.get('name') as string,
             email: formData.get('email') as string,
             phone: formData.get('phone') as string,
-            address: formData.get('address') as string,
             notes: formData.get('notes') as string,
-            position: formData.get('position') as string,
             domain: formData.get('domain') as string,
             type: formData.get('type') as 'INVITE' | 'VISITOR' | 'CLIENT',
             status: formData.get('status') as

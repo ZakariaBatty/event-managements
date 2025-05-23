@@ -25,20 +25,19 @@ interface InviteFormProps {
 }
 
 export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps) {
+  console.log("InviteForm", { invite, mode })
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    domain: "Industry",
     phone: "",
-    country: "",
-    event: "",
-    status: "pending",
+    address: "",
     notes: "",
-    organization: "",
     position: "",
-    dietary: "",
-    arrivalDate: null as Date | null,
-    departureDate: null as Date | null,
+    domain: "Industry",
+    type: "INVITE",
+    status: "APPROVED",
+    eventId: "",
+    countryId: "",
   })
 
   useEffect(() => {
@@ -85,10 +84,10 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
 
   return (
     <Tabs defaultValue="general" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6">
+      {/* <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6">
         <TabsTrigger value="general">General</TabsTrigger>
         <TabsTrigger value="details">Details</TabsTrigger>
-      </TabsList>
+      </TabsList> */}
 
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         <TabsContent value="general" className="space-y-4 sm:space-y-6">
@@ -137,18 +136,22 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="country">Country</Label>
-              <Input
-                id="country"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-                placeholder="Enter country"
-                required
-                readOnly={isReadOnly}
-                className={isReadOnly ? "bg-gray-50" : ""}
-              />
+              <Select
+                disabled={isReadOnly}
+                value={formData.countryId}
+                onValueChange={(value) => handleSelectChange("countryId", value)}
+              >
+                <SelectTrigger className={isReadOnly ? "bg-gray-50" : ""}>
+                  <SelectValue placeholder="Select a country" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Morocco">Morocco</SelectItem>
+                  <SelectItem value="USA">USA</SelectItem>
+                  <SelectItem value="France">France</SelectItem>
+                  <SelectItem value="Spain">Spain</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="domain">Domain</Label>
               <Select
@@ -175,8 +178,8 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
             <Label htmlFor="event">Event</Label>
             <Select
               disabled={isReadOnly}
-              value={formData.event}
-              onValueChange={(value) => handleSelectChange("event", value)}
+              value={formData.eventId}
+              onValueChange={(value) => handleSelectChange("eventId", value)}
             >
               <SelectTrigger className={isReadOnly ? "bg-gray-50" : ""}>
                 <SelectValue placeholder="Select an event" />
@@ -190,117 +193,6 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
             </Select>
           </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="status">Confirmed</Label>
-            <Switch
-              id="status"
-              checked={formData.status === "confirmed"}
-              onCheckedChange={handleStatusChange}
-              disabled={isReadOnly}
-            />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="details" className="space-y-4 sm:space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="organization">Organization</Label>
-            <Input
-              id="organization"
-              name="organization"
-              value={formData.organization}
-              onChange={handleChange}
-              placeholder="Enter organization name"
-              readOnly={isReadOnly}
-              className={isReadOnly ? "bg-gray-50" : ""}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="position">Position</Label>
-            <Input
-              id="position"
-              name="position"
-              value={formData.position}
-              onChange={handleChange}
-              placeholder="Enter position or title"
-              readOnly={isReadOnly}
-              className={isReadOnly ? "bg-gray-50" : ""}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="dietary">Dietary Requirements</Label>
-            <Input
-              id="dietary"
-              name="dietary"
-              value={formData.dietary}
-              onChange={handleChange}
-              placeholder="Enter any dietary requirements"
-              readOnly={isReadOnly}
-              className={isReadOnly ? "bg-gray-50" : ""}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Arrival Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !formData.arrivalDate && "text-muted-foreground",
-                      isReadOnly && "bg-gray-50 pointer-events-none",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.arrivalDate ? format(formData.arrivalDate, "PPP") : <span>Select date</span>}
-                  </Button>
-                </PopoverTrigger>
-                {!isReadOnly && (
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={formData.arrivalDate || undefined}
-                      onSelect={(date) => setFormData({ ...formData, arrivalDate: date || null })}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                )}
-              </Popover>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Departure Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !formData.departureDate && "text-muted-foreground",
-                      isReadOnly && "bg-gray-50 pointer-events-none",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.departureDate ? format(formData.departureDate, "PPP") : <span>Select date</span>}
-                  </Button>
-                </PopoverTrigger>
-                {!isReadOnly && (
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={formData.departureDate || undefined}
-                      onSelect={(date) => setFormData({ ...formData, departureDate: date || null })}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                )}
-              </Popover>
-            </div>
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="notes">Notes</Label>
             <Textarea
@@ -311,7 +203,17 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
               placeholder="Additional notes"
               readOnly={isReadOnly}
               className={isReadOnly ? "bg-gray-50" : ""}
-              rows={4}
+              rows={3}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="status">Confirmed</Label>
+            <Switch
+              id="status"
+              checked={formData.status === "confirmed"}
+              onCheckedChange={handleStatusChange}
+              disabled={isReadOnly}
             />
           </div>
         </TabsContent>
