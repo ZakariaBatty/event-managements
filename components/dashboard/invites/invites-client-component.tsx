@@ -238,8 +238,6 @@ export function InvitesClientComponent({ initialInvites, initialStats, countries
           mode={slideOverMode}
           onSubmit={handleFormSubmit}
           onCancel={() => setSlideOverOpen(false)}
-          countries={countries}
-          events={events}
         />
       </SlideOver>
     </div>

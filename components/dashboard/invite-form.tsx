@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils"
 interface InviteFormProps {
   invite?: any
   mode: "create" | "edit" | "view"
-  onSubmit: () => void
+  onSubmit: (data: any) => void
   onCancel: () => void
 }
 
@@ -78,7 +78,7 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
     e.preventDefault()
     // In a real app, you would call an API to save the invite
     console.log("Form data to save:", formData)
-    onSubmit()
+    onSubmit({ ...formData })
   }
 
   const isReadOnly = mode === "view"
