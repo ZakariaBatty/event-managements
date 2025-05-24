@@ -1,6 +1,7 @@
 import { eventRepository } from '../repositories/event-repository';
 import { sideEventItemRepository } from '../repositories/base-repository';
 import { speakerRepository } from '../repositories/base-repository';
+import { normalizeDateToISODateOnly } from '../utils';
 
 export const eventService = {
    async getEvents(page = 1, limit = 10) {
@@ -174,6 +175,26 @@ export const eventService = {
             item: {
                eventId,
             },
+         },
+      });
+   },
+
+   async eventsList() {
+      const today = new Date(normalizeDateToISODateOnly(new Date()));
+      return eventRepository.findAll({
+         where: {
+            endDate: {
+               gte: today,
+            },
+         },
+         orderBy: {
+            createdAt: 'asc',
+         },
+         select: {
+            id: true,
+            title: true,
+            startDate: true,
+            endDate: true,
          },
       });
    },

@@ -127,11 +127,23 @@ export function InvitesClientComponent({ initialInvites, initialStats, countries
 
   const handleFormSubmit = async (data: any) => {
     let result
-
+    console.log("cnx", slideOverMode, selectedInvite)
     if (slideOverMode === "create") {
-      result = await createInvite(new FormData(data))
+      const form = new FormData();
+      Object.entries(data).forEach(([key, value]: any) => {
+        if (value !== undefined && value !== null) {
+          form.append(key, value);
+        }
+      });
+      result = await createInvite(form)
     } else if (selectedInvite) {
-      result = await updateInvite(selectedInvite.id, new FormData(data.target))
+      const form = new FormData();
+      Object.entries(data).forEach(([key, value]: any) => {
+        if (value !== undefined && value !== null) {
+          form.append(key, value);
+        }
+      });
+      result = await updateInvite(selectedInvite.id, form)
     } else {
       toast({
         title: "Error",

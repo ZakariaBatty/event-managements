@@ -2,14 +2,15 @@ import { countryRepository } from '../repositories/country-repository';
 import { inviteRepository } from '../repositories/invite-repository';
 
 export const inviteService = {
-   async getInvites(page = 1, limit = 10, filters = {}) {
+   async getInvites(page: number, limit: number, filters = {}) {
       const { type, ...otherFilters } = filters as any;
       const whereClause: any = { ...otherFilters };
-
+      console.log('pag', page, limit, type);
       if (type) {
          whereClause.type = type;
       }
       const skip = (page - 1) * limit;
+
       const [data, total] = await Promise.all([
          inviteRepository.findAll({
             skip,
@@ -20,7 +21,7 @@ export const inviteService = {
                events: true,
             },
             orderBy: {
-               createdAt: 'asc',
+               createdAt: 'desc',
             },
          }),
          inviteRepository.count(whereClause),
@@ -98,7 +99,7 @@ export const inviteService = {
          notes: data.notes,
          domain: data.domain,
          type: data.type || 'INVITE',
-         status: data.status || 'PENDING',
+         status: data.status || 'ACCEPTED',
          events: {
             connect: {
                id: data.eventId,
@@ -117,6 +118,7 @@ export const inviteService = {
    async updateInvite(id: string, data: any) {
       // Handle country relationship
       let countryUpdate = {};
+      let eventUpdate = {};
 
       if (data.countryId) {
          countryUpdate = {
@@ -126,31 +128,27 @@ export const inviteService = {
                },
             },
          };
-      } else if (data.country) {
-         const country = await countryRepository.findOrCreate(data.country);
-         countryUpdate = {
-            country: {
+      }
+
+      if (data.eventId) {
+         eventUpdate = {
+            events: {
                connect: {
-                  id: country.id,
+                  id: data.eventId,
                },
             },
          };
       }
 
-      // Handle date fields
-      // const dateFields = {};
-      // if (data.arrivalDate) {
-      //    dateFields['arrivalDate'] = new Date(data.arrivalDate);
-      // }
-      // if (data.departureDate) {
-      //    dateFields['departureDate'] = new Date(data.departureDate);
-      // }
+      // Remove raw foreign keys from main data object
+      delete data.countryId;
+      delete data.eventId;
 
       // Update the invite
       return inviteRepository.update(id, {
          ...data,
-         //  ...dateFields,
          ...countryUpdate,
+         ...eventUpdate,
       });
    },
 
@@ -161,7 +159,7 @@ export const inviteService = {
    async getCountries() {
       return countryRepository.findAll({
          orderBy: {
-            name: 'asc',
+            name: 'desc',
          },
       });
    },

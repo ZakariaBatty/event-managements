@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { inviteSchema, type InviteFormData } from '../schemas';
 import { inviteService } from '../services/invite-service';
 import { revalidatePath } from 'next/cache';
+import { ContactStatus } from '@prisma/client';
 
 export async function getInvites({
    page,
@@ -81,10 +82,7 @@ export async function createInvite(formData: FormData) {
             notes: formData.get('notes') as string,
             domain: formData.get('domain') as string,
             type: formData.get('type') as 'INVITE' | 'VISITOR' | 'CLIENT',
-            status: formData.get('status') as
-               | 'PENDING'
-               | 'APPROVED'
-               | 'REJECTED',
+            status: formData.get('status') as ContactStatus,
             eventId: formData.get('eventId') as string,
             countryId: formData.get('countryId') as string,
          };
@@ -92,7 +90,7 @@ export async function createInvite(formData: FormData) {
          // Direct object passing
          data = formData;
       }
-
+      console.log('data', data);
       try {
          inviteSchema.parse(data);
       } catch (validationError) {
@@ -117,7 +115,6 @@ export async function createInvite(formData: FormData) {
 export async function updateInvite(id: string, formData: FormData) {
    try {
       let data: InviteFormData;
-
       // Check type formaData
       if (formData instanceof FormData) {
          data = {
@@ -127,10 +124,7 @@ export async function updateInvite(id: string, formData: FormData) {
             notes: formData.get('notes') as string,
             domain: formData.get('domain') as string,
             type: formData.get('type') as 'INVITE' | 'VISITOR' | 'CLIENT',
-            status: formData.get('status') as
-               | 'PENDING'
-               | 'APPROVED'
-               | 'REJECTED',
+            status: formData.get('status') as ContactStatus,
             eventId: formData.get('eventId') as string,
             countryId: formData.get('countryId') as string,
          };
@@ -140,6 +134,10 @@ export async function updateInvite(id: string, formData: FormData) {
       }
 
       try {
+         if (!data.name || !data.email || !data.phone) {
+            return { success: false, error: 'Missing required fields' };
+         }
+
          inviteSchema.parse(data);
       } catch (validationError) {
          if (validationError instanceof z.ZodError) {

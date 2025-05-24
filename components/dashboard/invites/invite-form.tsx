@@ -17,6 +17,8 @@ import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Spinner } from "@/components/ui/spinner"
+import { eventsList } from "@/lib/actions/event-actions"
+import { getCountriesAction } from "@/lib/actions/country-actions"
 
 interface InviteFormProps {
   invite?: any
@@ -26,26 +28,32 @@ interface InviteFormProps {
 }
 
 export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps) {
-
+  console.log("mode", mode)
   const [isLoading, setIsLoading] = useState(false)
-  const [] = useState()
+  const [countries, setCountries] = useState<any>([])
+  const [events, setEvents] = useState<any>([])
+  const [isFetched, setIsFetched] = useState(false)
 
   const [formData, setFormData] = useState({
     name: mode !== "create" ? invite.name || "" : "",
     email: mode !== "create" ? invite.email || "" : "",
     phone: mode !== "create" ? invite.phone || "" : "",
     notes: mode !== "create" ? invite.notes || "" : "",
-    position: mode !== "create" ? invite.position || "" : "",
     domain: mode !== "create" ? invite.domain || "Industry" : "Industry",
     type: mode !== "create" ? invite.type || "INVITE" : "INVITE",
-    status: mode !== "create" ? invite.status || "APPROVED" : "APPROVED",
+    status: mode !== "create" ? invite.status || "ACCEPTED" : "ACCEPTED",
     eventId: mode !== "create" ? invite.eventId || "" : "",
     countryId: mode !== "create" ? invite.countryId || "" : "",
   })
 
   useEffect(() => {
     const getData = async () => {
-
+      setIsFetched(true)
+      const countries = await getCountriesAction()
+      const events = await eventsList()
+      setCountries(countries || [])
+      setEvents(events || [])
+      setIsFetched(false)
     }
     getData()
   }, [])
@@ -77,7 +85,6 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
     setIsLoading(true)
     // In a real app, you would call an API to save the invite
     try {
-      console.log("Form data to save:", formData)
       await onSubmit({ ...formData })
     } catch (error) {
       console.error("Error submitting form:", error)
@@ -144,7 +151,7 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
             <div className="space-y-2">
               <Label htmlFor="country">Country</Label>
               <Select
-                disabled={isReadOnly}
+                disabled={isReadOnly || isFetched}
                 value={formData.countryId}
                 onValueChange={(value) => handleSelectChange("countryId", value)}
               >
@@ -152,10 +159,11 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
                   <SelectValue placeholder="Select a country" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Morocco">Morocco</SelectItem>
-                  <SelectItem value="USA">USA</SelectItem>
-                  <SelectItem value="France">France</SelectItem>
-                  <SelectItem value="Spain">Spain</SelectItem>
+                  {countries.map((country: any) => (
+                    <SelectItem key={country.id} value={country.id}>
+                      {isFetched ? "Loading..." : country.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -184,7 +192,7 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
           <div className="space-y-2">
             <Label htmlFor="event">Event</Label>
             <Select
-              disabled={isReadOnly}
+              disabled={isReadOnly || isFetched}
               value={formData.eventId}
               onValueChange={(value) => handleSelectChange("eventId", value)}
             >
@@ -192,10 +200,11 @@ export function InviteForm({ invite, mode, onSubmit, onCancel }: InviteFormProps
                 <SelectValue placeholder="Select an event" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Salon Halieutis 2025">Salon Halieutis 2025</SelectItem>
-                <SelectItem value="Tech Conference 2024">Tech Conference 2024</SelectItem>
-                <SelectItem value="Marketing Summit">Marketing Summit</SelectItem>
-                <SelectItem value="Business Expo 2024">Business Expo 2024</SelectItem>
+                {events.map((event: any) => (
+                  <SelectItem key={event.id} value={event.id}>
+                    {isFetched ? "Loading..." : event.title}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

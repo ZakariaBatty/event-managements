@@ -7,6 +7,10 @@ import { z } from 'zod';
 
 type EventInput = z.infer<typeof eventSchema>;
 
+export async function eventsList() {
+   return await eventService.eventsList();
+}
+
 export async function getEventAction(id: string) {
    const event = await eventService.getEvent(id);
    return event;

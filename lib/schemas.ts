@@ -100,14 +100,10 @@ export const inviteSchema = z.object({
    name: z.string().min(2, 'Name must be at least 2 characters'),
    email: z.string().email('Please enter a valid email address').optional(),
    phone: z.string().optional(),
-   address: z.string().optional(),
    notes: z.string().optional(),
-   position: z.string().optional(),
    domain: z.string().optional(),
-
    type: z.enum(['INVITE', 'VISITOR', 'CLIENT']).default('INVITE'),
-   status: z.enum(['PENDING', 'APPROVED', 'REJECTED']).default('PENDING'),
-
+   status: z.enum(['PENDING', 'ACCEPTED', 'DECLINED']).default('PENDING'),
    eventId: z.string().min(1, 'Event ID is required'),
    countryId: z.string().optional(),
 });
